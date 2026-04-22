@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-title" content="KidTracker"/>
 <meta name="theme-color" content="#2563eb"/>
 <title>KidTracker</title>
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;KidTracker&quot;,&quot;short_name&quot;:&quot;KidTracker&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23f0f4f9&quot;,&quot;theme_color&quot;:&quot;%232563eb&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f9d2.png&quot;,&quot;sizes&quot;:&quot;72x72&quot;,&quot;type&quot;:&quot;image/png&quot;}]}"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
 
 <script type="module">
@@ -39,7 +38,7 @@ html,body{height:100%}
 
 :root{
   --bg:#f0f4f9;--card:#fff;--border:#e2e8f0;--text:#1c2b3a;--muted:#8898aa;
-  --radius:14px;--shadow:0 2px 14px rgba(0,0,0,.07);--max-w:640px;--nav-h:58px;
+  --radius:14px;--shadow:0 2px 14px rgba(0,0,0,.07);--max-w:640px;--nav-h:52px;
   --school:#2563eb;--school-bg:#dbeafe;
   --ready:#d97706; --ready-bg:#fef3c7;
   --sleep:#7c3aed; --sleep-bg:#ede9fe;
@@ -49,35 +48,66 @@ html,body{height:100%}
   --ima:#be185d;   --ima-bg:#fce7f3;
 }
 
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padding-bottom:calc(var(--nav-h) + 10px)}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 
-/* ── Bottom nav ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--card);border-top:1.5px solid var(--border);display:flex;justify-content:center;z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
-.nav-inner{display:flex;width:100%;max-width:var(--max-w)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .15s}
-.nav-btn:hover{background:#f8fafc}
-.nav-btn .ni{font-size:1.2rem;line-height:1}
-.nav-btn .nl{font-size:.62rem;font-weight:700;color:var(--muted)}
-.nav-btn.active .nl{color:var(--school)}
+/* ── Top nav ── */
+.top-nav{
+  background:var(--card);
+  border-bottom:1.5px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  position:sticky;top:0;z-index:50;
+}
+.top-nav-inner{
+  display:flex;align-items:center;
+  max-width:var(--max-w);margin:0 auto;
+  padding:0 12px;height:var(--nav-h);
+  gap:4px;
+}
+.logo{font-size:1rem;font-weight:900;letter-spacing:-.3px;color:var(--text);flex-shrink:0}
+.logo span{color:var(--school)}
+.nav-spacer{flex:1}
+.nav-tab{
+  display:flex;align-items:center;gap:4px;
+  padding:6px 10px;border-radius:8px;
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
+  cursor:pointer;border:none;background:transparent;color:var(--muted);
+  transition:all .15s;white-space:nowrap;
+}
+.nav-tab:hover{background:#f1f5f9;color:var(--text)}
+.nav-tab.active{background:var(--school-bg);color:var(--school)}
+.nav-tab .ti{font-size:.95rem}
+
+/* ── Date bar ── */
+.date-bar{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;
+  padding:8px 16px;
+  max-width:var(--max-w);margin:0 auto;
+}
+.date-bar-text{
+  font-weight:800;font-size:.95rem;color:#374151;
+  min-width:160px;text-align:center;
+}
+.date-nav-btn{
+  background:none;border:1.5px solid var(--border);border-radius:8px;
+  width:30px;height:30px;cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;color:var(--text);flex-shrink:0;
+}
+.date-nav-btn:hover{background:#f1f5f9}
 
 /* ── Pages ── */
-.page{display:none;padding:14px 12px 0;max-width:var(--max-w);margin:0 auto}
+.page{display:none;padding:12px 12px 40px;max-width:var(--max-w);margin:0 auto}
 .page.active{display:block}
-
-/* ── Page header ── */
-.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.pt{font-size:1.15rem;font-weight:900;letter-spacing:-.4px}
-.pt small{font-size:.75rem;font-weight:600;color:var(--muted);margin-left:6px}
-.live-pill{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:800;color:var(--muted);background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:3px 9px}
-.lpip{width:7px;height:7px;border-radius:50%;background:#94a3b8}
-.lpip.on{background:#22c55e;animation:pip 1.5s infinite}
-@keyframes pip{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── Kid cards ── */
 .cards{display:flex;flex-direction:column;gap:10px}
 .kid-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .card-top{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1.5px solid var(--border);transition:background .3s}
-.kid-emoji{font-size:1.4rem;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f0f4f8;flex-shrink:0}
+.kid-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f0f4f8;flex-shrink:0;font-size:1.4rem;overflow:hidden}
+.kid-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .kid-info{flex:1;min-width:0}
 .kid-name{font-weight:900;font-size:.95rem;line-height:1}
 .kid-sub{font-size:.68rem;font-weight:700;color:var(--muted);margin-top:2px;transition:color .2s}
@@ -105,8 +135,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 
 .day-off-note{display:none;margin-top:6px}
 .day-off-note.visible{display:block}
-.day-off-note input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:600;color:var(--text);background:#f8fafc;outline:none;transition:border-color .2s}
-.day-off-note input:focus{border-color:var(--off)}
+.day-off-note input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:600;color:var(--text);background:#f8fafc;outline:none}
 .day-off-note input::placeholder{color:#c0ccd8}
 
 .time-row{display:inline-flex;align-items:center;gap:4px;margin-top:7px;background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:4px 8px}
@@ -117,22 +146,21 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 
 /* ── Daily note ── */
 .daily-note-box{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:11px 13px;margin-top:10px}
-.daily-note-box textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);background:#f8fafc;outline:none;resize:none;transition:border-color .2s;min-height:52px}
-.daily-note-box textarea:focus{border-color:#60a5fa}
+.daily-note-box textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);background:#f8fafc;outline:none;resize:none;min-height:52px}
 .daily-note-box textarea::placeholder{color:#c0ccd8}
 .note-meta{font-size:.6rem;color:#b0bec5;margin-top:4px}
 
 /* ── Calendar ── */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-nav button{background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--text)}
-.cal-nav button:hover{background:#f1f5f9}
+.cal-nav-btn{background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--text)}
+.cal-nav-btn:hover{background:#f1f5f9}
 .cal-month{font-weight:900;font-size:1rem}
 .cal-grid{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1.5px solid var(--border)}
 .cal-dow{text-align:center;padding:6px 2px;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
 .cal-dow.we{color:#f87171}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr)}
-.cal-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:3px 2px 4px;min-height:68px;cursor:pointer;transition:background .12s;position:relative}
+.cal-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:3px 2px 4px;min-height:80px;cursor:pointer;transition:background .12s}
 .cal-day:nth-child(7n){border-right:none}
 .cal-day:hover{background:#f8fafc}
 .cal-day.today{background:#eff6ff}
@@ -140,11 +168,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 .cal-day.om{background:#fafafa}
 .cal-day.om .cdn{color:#d1d5db}
 .cal-day.noschoolday{background:#fff7ed}
-.cdn{font-size:.7rem;font-weight:800;color:var(--text);display:block;text-align:center;margin-bottom:2px}
-
-/* Calendar capsules */
-.cal-capsules{display:flex;flex-direction:column;gap:2px;padding:0 1px}
-.cal-capsule{display:flex;align-items:center;gap:2px;border-radius:20px;padding:1px 4px;font-size:.52rem;font-weight:800;white-space:nowrap;overflow:hidden}
+.cdn{font-size:.7rem;font-weight:800;color:var(--text);display:block;text-align:center;margin-bottom:3px}
+.cal-capsules{display:flex;flex-direction:column;gap:2px;padding:0 2px}
+.cal-capsule{
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:20px;padding:2px 5px;
+  font-size:.55rem;font-weight:800;
+}
+.cal-capsule-left{display:flex;align-items:center;gap:2px}
+.cal-capsule-avatar{width:14px;height:14px;border-radius:50%;object-fit:cover;font-size:.6rem;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.cal-capsule-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .cal-day-tag{font-size:.48rem;font-weight:800;text-align:center;color:#c2410c;margin-top:1px}
 
 /* Cal detail */
@@ -153,53 +186,95 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 .cal-detail-title{font-weight:900;font-size:.95rem;margin-bottom:10px}
 .cal-detail-kid{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
 .cal-detail-kid:last-child{border-bottom:none}
-.cal-dn{font-weight:800;font-size:.82rem;width:72px;flex-shrink:0}
+.cal-detail-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0f4f8;font-size:1rem}
+.cal-detail-avatar img{width:100%;height:100%;object-fit:cover}
+.cal-dn{font-weight:800;font-size:.82rem;width:68px;flex-shrink:0}
 .cal-badges{display:flex;flex-wrap:wrap;gap:4px}
 .mbadge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px}
 
 /* ── Settings modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.visible{display:flex}
-.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:var(--max-w);max-height:90vh;overflow-y:auto;padding:20px 16px 32px;animation:slideUp .25s ease}
+.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:var(--max-w);max-height:92vh;overflow-y:auto;padding:16px 16px 36px;animation:slideUp .25s ease;position:relative}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:20px;margin:0 auto 16px}
-.modal-title{font-size:1.05rem;font-weight:900;margin-bottom:16px}
+.modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:20px;margin:0 auto 14px}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)}
-
-.srow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px}
+.modal-title{font-size:1.05rem;font-weight:900;margin-bottom:14px}
+.ssection{background:#f8fafc;border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.ssection-title{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:9px 12px 7px;border-bottom:1.5px solid var(--border);background:#f0f4f8}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);gap:10px}
 .srow:last-child{border-bottom:none}
 .slbl{font-size:.82rem;font-weight:700}
 .ssub{font-size:.67rem;color:var(--muted);font-weight:600;margin-top:1px}
 .sctl{flex-shrink:0}
-.sctl input[type=time]{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:var(--text);outline:none;background:#f8fafc;cursor:pointer}
+.sctl input[type=time]{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:var(--text);outline:none;background:var(--card);cursor:pointer;width:100px}
 .sctl input[type=time]:focus{border-color:#60a5fa}
-.sctl input[type=text]{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:var(--text);outline:none;background:#f8fafc;width:110px}
+.sctl input[type=text]{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:var(--text);outline:none;background:var(--card);width:110px}
 .sctl input[type=text]:focus{border-color:#60a5fa}
-
-.ssection-title{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin:16px 0 6px;padding-bottom:5px;border-bottom:1.5px solid var(--border)}
-
-.dow-picker{display:flex;gap:5px;flex-wrap:wrap}
-.dow-chip{padding:4px 9px;border-radius:20px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#f1f5f9;color:var(--muted);user-select:none;transition:all .12s}
+.dow-picker{display:flex;gap:4px;flex-wrap:wrap}
+.dow-chip{padding:4px 8px;border-radius:20px;font-size:.68rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);user-select:none;transition:all .12s}
 .dow-chip.active{background:var(--school-bg);color:var(--school);border-color:var(--school)}
 
-.save-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--school);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;margin-top:16px;transition:background .15s}
+/* Icon picker */
+.icon-picker{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
+.icon-opt{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;cursor:pointer;
+  border:2px solid transparent;
+  background:#f0f4f8;transition:all .12s;
+  overflow:hidden;
+}
+.icon-opt:hover{border-color:var(--school);transform:scale(1.08)}
+.icon-opt.selected{border-color:var(--school);box-shadow:0 0 0 3px var(--school-bg)}
+.icon-opt img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.upload-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:8px;
+  border:1.5px dashed var(--border);
+  background:var(--card);color:var(--muted);
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.75rem;
+  cursor:pointer;transition:all .15s;margin-top:6px;
+}
+.upload-btn:hover{border-color:var(--school);color:var(--school)}
+
+.save-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--school);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;margin-top:12px;transition:background .15s}
 .save-btn:hover{background:#1d4ed8}
-.reset-btn{width:100%;padding:10px;border:1.5px solid #fca5a5;border-radius:10px;background:#fff5f5;color:#dc2626;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;margin-top:8px;transition:all .15s}
+.reset-btn{width:100%;padding:10px;border:1.5px solid #fca5a5;border-radius:10px;background:#fff5f5;color:#dc2626;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;margin-top:8px}
 .reset-btn:hover{background:#fee2e2}
-.notif-btn{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:10px;background:#f8fafc;color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;margin-top:8px}
+.notif-btn{padding:5px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer}
 </style>
 </head>
 <body>
 
+<!-- ══ TOP NAV ══ -->
+<div class="top-nav">
+  <div class="top-nav-inner">
+    <div class="logo">🧒 <span>Kid</span>Tracker</div>
+    <div class="nav-spacer"></div>
+    <button class="nav-tab active" id="nav-today" onclick="showPage('today')">
+      <span class="ti">🏠</span> Today
+    </button>
+    <button class="nav-tab" id="nav-calendar" onclick="showPage('calendar')">
+      <span class="ti">📅</span> Calendar
+    </button>
+    <button class="nav-tab" id="nav-settings-btn" onclick="openSettings()">
+      <span class="ti">⚙️</span> Settings
+    </button>
+  </div>
+</div>
+
+<!-- ══ DATE BAR (Today page only) ══ -->
+<div id="date-bar-wrap" style="background:var(--card);border-bottom:1px solid var(--border)">
+  <div class="date-bar" style="max-width:var(--max-w);margin:0 auto">
+    <button class="date-nav-btn" onclick="changeDay(-1)">‹</button>
+    <div class="date-bar-text" id="date-bar-text"></div>
+    <button class="date-nav-btn" onclick="changeDay(1)">›</button>
+  </div>
+</div>
+
 <!-- ══ TODAY ══ -->
 <div class="page active" id="page-today">
-  <div class="ph">
-    <div class="pt">🧒 KidTracker <small id="today-label"></small></div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <div class="live-pill"><div class="lpip" id="live-pip"></div><span id="live-label">Connecting</span></div>
-      <button onclick="openSettings()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:2px 4px" title="Settings">⚙️</button>
-    </div>
-  </div>
   <div id="no-school-banner" style="display:none;background:#fff7ed;border:1.5px solid #fb923c;border-radius:10px;padding:8px 12px;font-size:.8rem;font-weight:700;color:#9a3412;margin-bottom:10px;text-align:center"></div>
   <div class="cards" id="cards"></div>
   <div class="daily-note-box">
@@ -211,11 +286,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 
 <!-- ══ CALENDAR ══ -->
 <div class="page" id="page-calendar">
-  <div class="ph"><div class="pt">📅 Calendar</div></div>
   <div class="cal-nav">
-    <button id="cal-prev">‹ Prev</button>
+    <button class="cal-nav-btn" id="cal-prev">‹ Prev</button>
     <div class="cal-month" id="cal-month-label"></div>
-    <button id="cal-next">Next ›</button>
+    <button class="cal-nav-btn" id="cal-next">Next ›</button>
   </div>
   <div class="cal-grid">
     <div class="cal-dow-row" id="cal-dow-row"></div>
@@ -227,53 +301,31 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
   </div>
 </div>
 
-<!-- ══ BOTTOM NAV ══ -->
-<nav class="bottom-nav">
-  <div class="nav-inner">
-    <button class="nav-btn active" id="nav-today" onclick="showPage('today')">
-      <span class="ni">🏠</span><span class="nl">Today</span>
-    </button>
-    <button class="nav-btn" id="nav-calendar" onclick="showPage('calendar')">
-      <span class="ni">📅</span><span class="nl">Calendar</span>
-    </button>
-  </div>
-</nav>
-
 <!-- ══ SETTINGS MODAL ══ -->
-<div class="modal-overlay" id="settings-modal" onclick="handleModalClick(event)">
+<div class="modal-overlay" id="settings-modal" onclick="handleModalBg(event)">
   <div class="modal" id="modal-inner">
     <div class="modal-handle"></div>
     <button class="modal-close" onclick="closeSettings()">✕</button>
     <div class="modal-title">⚙️ Settings</div>
 
-    <div class="ssection-title">Your Name</div>
-    <div class="srow">
-      <div><div class="slbl">Who are you?</div><div class="ssub">Shows on updates</div></div>
-      <div class="sctl"><input type="text" id="s-username" placeholder="Abba or Ima"/></div>
+    <!-- Who are you -->
+    <div class="ssection">
+      <div class="ssection-title">Your Identity (saved on this device only)</div>
+      <div class="srow">
+        <div><div class="slbl">Your name</div><div class="ssub">Shows on updates — unique per device</div></div>
+        <div class="sctl"><input type="text" id="s-username" placeholder="Abba or Ima"/></div>
+      </div>
     </div>
 
-    <div class="ssection-title">School Schedule</div>
-    <div class="srow">
-      <div><div class="slbl">School Days</div><div class="ssub">Days kids go to school</div></div>
-      <div class="sctl"><div class="dow-picker" id="dow-picker"></div></div>
-    </div>
-    <div class="srow">
-      <div><div class="slbl">Default End Time</div><div class="ssub">Regular school end</div></div>
-      <div class="sctl"><input type="time" id="s-endtime" value="14:00"/></div>
-    </div>
-    <div class="srow">
-      <div><div class="slbl">Half Day End Time</div><div class="ssub">End time on half days</div></div>
-      <div class="sctl"><input type="time" id="s-halfdaytime" value="12:00"/></div>
-    </div>
+    <!-- Per-kid sections -->
+    <div id="per-kid-sections"></div>
 
-    <div class="ssection-title">Default Pickup Times</div>
-    <div id="s-pickup-rows"></div>
-
-    <div class="ssection-title">Notifications</div>
-    <div class="srow">
-      <div><div class="slbl">Pickup Reminders</div><div class="ssub">Alert 15 min before pickup</div></div>
-      <div class="sctl">
-        <button class="notif-btn" id="notif-btn" onclick="requestNotifications()" style="width:auto;margin:0;padding:5px 12px;font-size:.75rem">Enable</button>
+    <!-- Notifications -->
+    <div class="ssection">
+      <div class="ssection-title">Notifications</div>
+      <div class="srow">
+        <div><div class="slbl">Pickup Reminders</div><div class="ssub">Alert 15 min before pickup time</div></div>
+        <div class="sctl"><button class="notif-btn" id="notif-btn" onclick="requestNotifications()">Enable</button></div>
       </div>
     </div>
 
@@ -284,13 +336,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 
 <script>
 // ═══════════════════════════
-// DATA
+// CONSTANTS
 // ═══════════════════════════
-const KIDS = [
-  {id:"shlomo",   name:"Shlomo",   emoji:"👦"},
-  {id:"zecharya", name:"Zecharya", emoji:"🧒"},
-  {id:"rivka",    name:"Rivka",    emoji:"👧"},
+const KIDS_DEFAULT = [
+  {id:"shlomo",   name:"Shlomo",   icon:"👦"},
+  {id:"zecharya", name:"Zecharya", icon:"🧒"},
+  {id:"rivka",    name:"Rivka",    icon:"👧"},
 ];
+const ICON_OPTIONS = ["👦","👧","🧒","🧒‍♂️","🧒‍♀️","🙋‍♂️","🙋‍♀️","🧑","👶","🌟","⭐","🦁","🐻","🐼","🐨","🦊","🐯","🐸","🦋","🌈","🚀","⚽","🎨","🎵"];
 const STATUSES = [
   {key:"school", icon:"🏫", label:"In School"},
   {key:"ready",  icon:"🎒", label:"Getting Ready"},
@@ -298,79 +351,127 @@ const STATUSES = [
   {key:"off",    icon:"🏖️",  label:"Day Off"},
   {key:"help",   icon:"🆘", label:"Need Abba's Help"},
 ];
-const SC = {school:"#2563eb",ready:"#d97706",sleep:"#7c3aed",off:"#475569",help:"#dc2626"};
-const SB = {school:"#dbeafe",ready:"#fef3c7",sleep:"#ede9fe",off:"#e2e8f0",help:"#fee2e2"};
-const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const SC={school:"#2563eb",ready:"#d97706",sleep:"#7c3aed",off:"#475569",help:"#dc2626"};
+const SB={school:"#dbeafe",ready:"#fef3c7",sleep:"#ede9fe",off:"#e2e8f0",help:"#fee2e2"};
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+// Local (per device)
+let localSettings = JSON.parse(localStorage.getItem("kt_local")||"{}");
+// userName is local only
+let userName = localSettings.userName || "";
+
+// Shared via Firebase
 let settings = {
-  schoolDays:[0,1,2,3,4,5],
-  endTime:"14:00",
-  halfdayTime:"12:00",
-  userName:"",
-  kidPickupTimes:{shlomo:"15:30",zecharya:"16:45",rivka:null},
+  kids: KIDS_DEFAULT.map(k=>({...k, schoolDays:[0,1,2,3,4,5], endTime:"14:00", halfdayTime:"12:00", pickupTime: k.id==="shlomo"?"15:30":k.id==="zecharya"?"16:45":null})),
 };
 
-let todayData = {dayType:null,dailyNote:"",noteUpdatedBy:null,noteUpdatedAt:null,kids:{}};
-KIDS.forEach(k => { todayData.kids[k.id] = {status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null}; });
+let viewDateOffset = 0; // 0=today, -1=yesterday, etc
+function getViewKey(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + (offset||0));
+  return d.toISOString().split("T")[0];
+}
 
+let dayCache = {}; // dateKey -> data
 let historyData = {};
-const todayKey = new Date().toISOString().split("T")[0];
+
+// ═══════════════════════════
+// DATE BAR
+// ═══════════════════════════
+function updateDateBar() {
+  const d = new Date();
+  d.setDate(d.getDate() + viewDateOffset);
+  const isToday = viewDateOffset === 0;
+  const isYesterday = viewDateOffset === -1;
+  const isTomorrow = viewDateOffset === 1;
+  let label = d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+  if(isToday) label = "Today — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  if(isYesterday) label = "Yesterday — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  if(isTomorrow) label = "Tomorrow — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  document.getElementById("date-bar-text").textContent = label;
+}
+
+function changeDay(delta) {
+  viewDateOffset += delta;
+  updateDateBar();
+  loadDayData(getViewKey(viewDateOffset));
+}
+updateDateBar();
 
 // ═══════════════════════════
 // FIREBASE
 // ═══════════════════════════
-const DB_DAY  = `kidtracker/days/${todayKey}`;
-const DB_HIST = `kidtracker/days`;
-const DB_SET  = `kidtracker/settings`;
-const DB_META = `kidtracker/meta`;
+const DB_HIST = "kidtracker/days";
+const DB_SET  = "kidtracker/settings";
+const DB_META = "kidtracker/meta";
 
-function syncDay()  { if(window._fbSet) window._fbSet(DB_DAY, todayData); }
-function syncSets() { if(window._fbSet) window._fbSet(DB_SET, settings); }
+function dbDay(dateKey){ return `kidtracker/days/${dateKey}`; }
+
+function syncDay(dateKey, data) {
+  if(window._fbSet) window._fbSet(dbDay(dateKey), data);
+}
+function syncSettings() {
+  if(window._fbSet) window._fbSet(DB_SET, settings);
+}
+
+function emptyDayData() {
+  const kids={};
+  KIDS_DEFAULT.forEach(k=>{kids[k.id]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null};});
+  return {dailyNote:"",noteUpdatedBy:null,noteUpdatedAt:null,kids};
+}
+
+function loadDayData(dateKey) {
+  if(dayCache[dateKey]) { renderToday(dayCache[dateKey]); return; }
+  // Will be loaded via onValue listener
+  renderToday(emptyDayData());
+}
 
 document.addEventListener("firebase-ready", () => {
-  window._fbOn(DB_DAY, data => {
-    if(data){
-      todayData = {...todayData, ...data};
-      if(data.kids) KIDS.forEach(k => { todayData.kids[k.id] = {...todayData.kids[k.id], ...(data.kids[k.id]||{})}; });
-    }
-    renderToday();
+  // Listen all days
+  window._fbOn(DB_HIST, data => {
+    historyData = data||{};
+    // Update cache
+    Object.keys(historyData).forEach(k=>{ dayCache[k]=historyData[k]; });
+    renderToday(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
   });
-  window._fbOn(DB_HIST, data => { if(data) historyData=data; });
-  window._fbOn(DB_SET,  data => {
-    if(data){ settings={...settings,...data}; if(data.kidPickupTimes) settings.kidPickupTimes={...settings.kidPickupTimes,...data.kidPickupTimes}; }
-    applyPickupDefaults();
-  });
-  // Auto-reset check
-  window._fbOn(DB_META, data => {
-    const today = new Date().toISOString().split("T")[0];
-    if(data?.lastReset !== today) {
-      // Only reset if it's past 5am
-      if(new Date().getHours() >= 5) {
-        KIDS.forEach(k => { todayData.kids[k.id] = {status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null}; });
-        todayData.dayType=null; todayData.dailyNote=""; todayData.noteUpdatedBy=null; todayData.noteUpdatedAt=null;
-        window._fbSet(DB_META, {lastReset: today});
-        syncDay();
+
+  window._fbOn(DB_SET, data => {
+    if(data && data.kids) {
+      // Merge per-kid settings
+      settings.kids = KIDS_DEFAULT.map(kd=>{
+        const saved = data.kids.find?.(x=>x.id===kd.id) || (Array.isArray(data.kids)?null:data.kids[kd.id]);
+        return saved ? {...kd,...saved} : kd;
+      });
+      if(!Array.isArray(settings.kids)) {
+        settings.kids = KIDS_DEFAULT.map(kd=>({...kd,...(data.kids[kd.id]||{})}));
       }
     }
   });
-  document.getElementById("live-pip").classList.add("on");
-  document.getElementById("live-label").textContent = "Live";
+
+  // Auto-reset
+  window._fbOn(DB_META, data => {
+    const today = new Date().toISOString().split("T")[0];
+    if(data?.lastReset !== today && new Date().getHours() >= 5) {
+      window._fbSet(DB_META, {lastReset: today});
+    }
+  });
+
+  document.getElementById("live-pip") && document.getElementById("live-pip").classList.add("on");
 });
 
 // ═══════════════════════════
-// BUILD UI
+// BUILD TODAY CARDS
 // ═══════════════════════════
-const now = new Date();
-document.getElementById("today-label").textContent =
-  now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-
 const container = document.getElementById("cards");
-KIDS.forEach(kid => {
+KIDS_DEFAULT.forEach(kid => {
   const card = document.createElement("div");
   card.className="kid-card"; card.id=`card-${kid.id}`;
   card.innerHTML=`
     <div class="card-top" id="top-${kid.id}">
-      <div class="kid-emoji">${kid.emoji}</div>
+      <div class="kid-avatar" id="avatar-${kid.id}">${kid.icon}</div>
       <div class="kid-info">
         <div class="kid-name">${kid.name}</div>
         <div class="kid-sub" id="sub-${kid.id}">No status yet</div>
@@ -400,37 +501,46 @@ KIDS.forEach(kid => {
         </div>
         <div class="time-row" id="tr-${kid.id}">
           <span>🕐</span>
-          <input type="time" class="pickup-time" data-kid="${kid.id}" value="${settings.kidPickupTimes[kid.id]||''}"/>
+          <input type="time" class="pickup-time" data-kid="${kid.id}"/>
         </div>
       </div>
     </div>`;
   container.appendChild(card);
 
   card.querySelectorAll(".chip[data-status]").forEach(b=>b.addEventListener("click",()=>{
-    const id=b.dataset.kid,st=b.dataset.status;
-    todayData.kids[id].status = todayData.kids[id].status===st?null:st;
-    if(todayData.kids[id].status!=="off") todayData.kids[id].dayOffNote="";
-    stamp(id); syncDay(); renderKid(id);
+    const data=getCurrentDayData();
+    data.kids[b.dataset.kid].status = data.kids[b.dataset.kid].status===b.dataset.status?null:b.dataset.status;
+    if(data.kids[b.dataset.kid].status!=="off") data.kids[b.dataset.kid].dayOffNote="";
+    stampKid(data, b.dataset.kid);
+    saveDayData(data); renderToday(data);
   }));
 
   document.getElementById(`don-inp-${kid.id}`).addEventListener("input",e=>{
-    todayData.kids[kid.id].dayOffNote=e.target.value; syncDay();
+    const data=getCurrentDayData();
+    data.kids[kid.id].dayOffNote=e.target.value;
+    saveDayData(data);
   });
 
   card.querySelectorAll(".chip[data-pickup]").forEach(b=>b.addEventListener("click",()=>{
-    const id=b.dataset.kid,p=b.dataset.pickup;
-    todayData.kids[id].pickup = todayData.kids[id].pickup===p?null:p;
-    stamp(id); syncDay(); renderKid(id);
+    const data=getCurrentDayData();
+    data.kids[b.dataset.kid].pickup = data.kids[b.dataset.kid].pickup===b.dataset.pickup?null:b.dataset.pickup;
+    stampKid(data, b.dataset.kid);
+    saveDayData(data); renderToday(data);
   }));
 
   card.querySelectorAll(".chip[data-daytype]").forEach(b=>b.addEventListener("click",()=>{
-    const id=b.dataset.kid,dt=b.dataset.daytype;
-    todayData.kids[id].dayType = todayData.kids[id].dayType===dt?null:dt;
-    stamp(id); syncDay(); renderKid(id);
+    const data=getCurrentDayData();
+    data.kids[b.dataset.kid].dayType = data.kids[b.dataset.kid].dayType===b.dataset.daytype?null:b.dataset.daytype;
+    stampKid(data, b.dataset.kid);
+    saveDayData(data); renderToday(data);
   }));
 
   const tp=card.querySelector(".pickup-time");
-  if(tp) tp.addEventListener("change",()=>{ todayData.kids[kid.id].pickupTime=tp.value; syncDay(); schedulePickupReminders(); });
+  if(tp) tp.addEventListener("change",()=>{
+    const data=getCurrentDayData();
+    data.kids[kid.id].pickupTime=tp.value;
+    saveDayData(data); schedulePickupReminders(data);
+  });
 });
 
 // Daily note
@@ -438,32 +548,52 @@ let noteTimer;
 document.getElementById("daily-note").addEventListener("input",()=>{
   clearTimeout(noteTimer);
   noteTimer=setTimeout(()=>{
-    todayData.dailyNote=document.getElementById("daily-note").value;
-    todayData.noteUpdatedBy=settings.userName||null;
-    todayData.noteUpdatedAt=fmt(new Date());
-    syncDay(); renderNoteMeta();
+    const data=getCurrentDayData();
+    data.dailyNote=document.getElementById("daily-note").value;
+    data.noteUpdatedBy=userName||null;
+    data.noteUpdatedAt=fmt(new Date());
+    saveDayData(data); renderNoteMeta(data);
   },600);
 });
 
+function getCurrentDayData() {
+  const key=getViewKey(viewDateOffset);
+  return JSON.parse(JSON.stringify(dayCache[key]||emptyDayData()));
+}
+function saveDayData(data) {
+  const key=getViewKey(viewDateOffset);
+  dayCache[key]=data;
+  syncDay(key, data);
+}
+function stampKid(data, id) {
+  data.kids[id].updatedAt=fmt(new Date());
+  data.kids[id].updatedBy=userName||null;
+}
+
 // ═══════════════════════════
-// RENDER
+// RENDER TODAY
 // ═══════════════════════════
-function renderToday(){
-  KIDS.forEach(k=>renderKid(k.id));
+function renderToday(data) {
+  if(!data) data=emptyDayData();
+  KIDS_DEFAULT.forEach(k=>renderKid(k, data));
+
   const dn=document.getElementById("daily-note");
-  if(dn.value!==(todayData.dailyNote||"")) dn.value=todayData.dailyNote||"";
-  renderNoteMeta();
+  if(dn.value!==(data.dailyNote||"")) dn.value=data.dailyNote||"";
+  renderNoteMeta(data);
+
   const banner=document.getElementById("no-school-banner");
-  const allNS=KIDS.every(k=>todayData.kids[k.id].dayType==="noschool");
+  const allNS=KIDS_DEFAULT.every(k=>data.kids[k.id]?.dayType==="noschool");
   banner.style.display=allNS?"block":"none";
   if(allNS) banner.textContent="🚫 No school today for all kids";
 }
 
-function renderKid(id){
-  const s=todayData.kids[id];
+function renderKid(kid, data) {
+  const s=data.kids[kid.id]||{};
   const st=STATUSES.find(x=>x.key===s.status);
-  const badge=document.getElementById(`badge-${id}`);
-  const sub=document.getElementById(`sub-${id}`);
+  const kidSetting=settings.kids.find(k=>k.id===kid.id)||kid;
+
+  const badge=document.getElementById(`badge-${kid.id}`);
+  const sub=document.getElementById(`sub-${kid.id}`);
   if(st){
     badge.textContent=`${st.icon} ${st.label}`; badge.style.background=SB[s.status]; badge.style.color=SC[s.status];
     sub.textContent=`${st.icon} ${st.label}`; sub.style.color=SC[s.status];
@@ -471,22 +601,24 @@ function renderKid(id){
     badge.textContent="—"; badge.style.background=""; badge.style.color="";
     sub.textContent="No status yet"; sub.style.color="";
   }
-  document.getElementById(`top-${id}`).style.background=s.status?SB[s.status]+"55":"";
-  const meta=document.getElementById(`meta-${id}`);
-  meta.textContent=s.updatedAt?`Updated ${s.updatedAt}${s.updatedBy?" by "+s.updatedBy:""}`:"";
+  document.getElementById(`top-${kid.id}`).style.background=s.status?SB[s.status]+"55":"";
+  document.getElementById(`meta-${kid.id}`).textContent=
+    s.updatedAt?`Updated ${s.updatedAt}${s.updatedBy?" by "+s.updatedBy:""}`:"";
 
-  document.querySelectorAll(`.chip[data-kid="${id}"][data-status]`).forEach(b=>b.classList.toggle("active",b.dataset.status===s.status));
-  document.querySelectorAll(`.chip[data-kid="${id}"][data-pickup]`).forEach(b=>b.classList.toggle("active",b.dataset.pickup===s.pickup));
-  document.querySelectorAll(`.chip[data-kid="${id}"][data-daytype]`).forEach(b=>b.classList.toggle("active",b.dataset.daytype===s.dayType));
+  // Avatar
+  renderAvatarEl(document.getElementById(`avatar-${kid.id}`), kidSetting);
 
-  const don=document.getElementById(`don-${id}`);
-  const donInp=document.getElementById(`don-inp-${id}`);
-  don.classList.toggle("visible",s.status==="off");
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-status]`).forEach(b=>b.classList.toggle("active",b.dataset.status===s.status));
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-pickup]`).forEach(b=>b.classList.toggle("active",b.dataset.pickup===s.pickup));
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-daytype]`).forEach(b=>b.classList.toggle("active",b.dataset.daytype===s.dayType));
+
+  document.getElementById(`don-${kid.id}`).classList.toggle("visible",s.status==="off");
+  const donInp=document.getElementById(`don-inp-${kid.id}`);
   if(donInp.value!==(s.dayOffNote||"")) donInp.value=s.dayOffNote||"";
 
-  const tp=document.querySelector(`.pickup-time[data-kid="${id}"]`);
-  const tr=document.getElementById(`tr-${id}`);
-  const pt=s.pickupTime||settings.kidPickupTimes[id];
+  const tp=document.querySelector(`.pickup-time[data-kid="${kid.id}"]`);
+  const tr=document.getElementById(`tr-${kid.id}`);
+  const pt=s.pickupTime||kidSetting.pickupTime||null;
   if(pt){ tp.style.display=""; if(tp.value!==pt) tp.value=pt;
     const[ph,pm]=pt.split(":").map(Number);
     const diff=(ph*60+pm)-(new Date().getHours()*60+new Date().getMinutes());
@@ -494,24 +626,18 @@ function renderKid(id){
   } else { tp.style.display="none"; tr.classList.remove("soon"); }
 }
 
-function renderNoteMeta(){
+function renderAvatarEl(el, kidSetting) {
+  if(!el) return;
+  if(kidSetting.iconImg) {
+    el.innerHTML=`<img src="${kidSetting.iconImg}" alt="${kidSetting.name}"/>`;
+  } else {
+    el.innerHTML=kidSetting.icon||kidSetting.emoji||"🧒";
+  }
+}
+
+function renderNoteMeta(data) {
   const m=document.getElementById("note-meta");
-  m.textContent=todayData.noteUpdatedAt?`Updated ${todayData.noteUpdatedAt}${todayData.noteUpdatedBy?" by "+todayData.noteUpdatedBy:""}`:"";
-}
-
-function applyPickupDefaults(){
-  KIDS.forEach(k=>{
-    const tp=document.querySelector(`.pickup-time[data-kid="${k.id}"]`);
-    if(tp&&!todayData.kids[k.id].pickupTime){
-      const def=settings.kidPickupTimes[k.id];
-      if(def){tp.value=def;tp.style.display="";}else tp.style.display="none";
-    }
-  });
-}
-
-function stamp(id){
-  todayData.kids[id].updatedAt=fmt(new Date());
-  todayData.kids[id].updatedBy=settings.userName||null;
+  m.textContent=data?.noteUpdatedAt?`Updated ${data.noteUpdatedAt}${data.noteUpdatedBy?" by "+data.noteUpdatedBy:""}`:"";
 }
 
 // ═══════════════════════════
@@ -524,10 +650,8 @@ document.getElementById("cal-next").onclick=()=>{calM++;if(calM>11){calM=0;calY+
 function renderCalendar(){
   document.getElementById("cal-month-label").textContent=
     new Date(calY,calM,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
-
   document.getElementById("cal-dow-row").innerHTML=
     DOW.map((n,i)=>`<div class="cal-dow${i===6?" we":""}">${n}</div>`).join("");
-
   const daysEl=document.getElementById("cal-days"); daysEl.innerHTML="";
   const first=new Date(calY,calM,1).getDay();
   const dim=new Date(calY,calM+1,0).getDate();
@@ -538,38 +662,44 @@ function renderCalendar(){
     el.innerHTML=`<span class="cdn">${new Date(calY,calM,-first+i+1).getDate()}</span>`;
     daysEl.appendChild(el);
   }
-
   for(let day=1;day<=dim;day++){
     const dk=`${calY}-${String(calM+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
     const dd=historyData[dk];
     const dow=new Date(calY,calM,day).getDay();
-    const isSchool=settings.schoolDays.includes(dow);
+    const kidWithDow = settings.kids.find(k=>k.schoolDays&&!k.schoolDays.includes(dow));
+    const noSchoolDay = !!kidWithDow || (settings.kids.every(k=>k.schoolDays&&!k.schoolDays.includes(dow)));
     const isToday=calY===td.getFullYear()&&calM===td.getMonth()&&day===td.getDate();
 
     const el=document.createElement("div");
-    el.className=`cal-day${isToday?" today":""}${!isSchool?" noschoolday":""}`;
+    el.className=`cal-day${isToday?" today":""}${noSchoolDay?" noschoolday":""}`;
 
     let capsulesHtml="";
     let tagHtml="";
     if(dd?.kids){
-      const anyNS=KIDS.some(k=>dd.kids[k.id]?.dayType==="noschool");
-      const anyHD=KIDS.some(k=>dd.kids[k.id]?.dayType==="halfday");
+      const anyNS=KIDS_DEFAULT.some(k=>dd.kids[k.id]?.dayType==="noschool");
+      const anyHD=KIDS_DEFAULT.some(k=>dd.kids[k.id]?.dayType==="halfday");
       if(anyNS) tagHtml=`<div class="cal-day-tag">No School</div>`;
       else if(anyHD) tagHtml=`<div class="cal-day-tag">½ Day</div>`;
 
-      capsulesHtml=`<div class="cal-capsules">`+KIDS.map(k=>{
+      capsulesHtml=`<div class="cal-capsules">`+KIDS_DEFAULT.map(k=>{
         const ks=dd.kids[k.id];
         if(!ks?.status) return "";
         const st=STATUSES.find(x=>x.key===ks.status);
         if(!st) return "";
-        return `<div class="cal-capsule" style="background:${SB[ks.status]};color:${SC[ks.status]}">${k.emoji} ${st.icon}</div>`;
+        const kidSetting=settings.kids.find(x=>x.id===k.id)||k;
+        const avatarHtml=kidSetting.iconImg
+          ?`<div class="cal-capsule-avatar"><img src="${kidSetting.iconImg}"/></div>`
+          :`<div class="cal-capsule-avatar" style="background:${SB[ks.status]}">${kidSetting.icon||k.icon}</div>`;
+        return `<div class="cal-capsule" style="background:${SB[ks.status]};color:${SC[ks.status]}">`+
+          `<div class="cal-capsule-left">${avatarHtml}<span>${k.name.slice(0,4)}</span></div>`+
+          `<span>${st.icon}</span>`+
+          `</div>`;
       }).join("")+`</div>`;
     }
     el.innerHTML=`<span class="cdn">${day}</span>${capsulesHtml}${tagHtml}`;
-    el.addEventListener("click",()=>showCalDetail(dk,day));
+    el.addEventListener("click",()=>showCalDetail(dk));
     daysEl.appendChild(el);
   }
-
   const total=first+dim;
   const rem=total%7===0?0:7-(total%7);
   for(let i=1;i<=rem;i++){
@@ -578,7 +708,7 @@ function renderCalendar(){
   }
 }
 
-function showCalDetail(dk,day){
+function showCalDetail(dk){
   const detail=document.getElementById("cal-detail");
   const title=document.getElementById("cal-detail-title");
   const body=document.getElementById("cal-detail-body");
@@ -586,132 +716,244 @@ function showCalDetail(dk,day){
   title.textContent=new Date(dk+"T00:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
   detail.classList.add("visible");
   if(!data?.kids){body.innerHTML=`<div style="color:var(--muted);font-size:.82rem;padding:6px 0">No data for this day.</div>`;return;}
-  body.innerHTML=KIDS.map(k=>{
+  body.innerHTML=KIDS_DEFAULT.map(k=>{
     const ks=data.kids[k.id]; if(!ks) return "";
     const st=STATUSES.find(x=>x.key===ks.status);
-    const stB=st?`<span class="mbadge" style="background:${SB[ks.status]};color:${SC[ks.status]}">${st.icon} ${st.label}</span>`:`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">—</span>`;
+    const kidSetting=settings.kids.find(x=>x.id===k.id)||k;
+    const avatarHtml=kidSetting.iconImg
+      ?`<div class="cal-detail-avatar"><img src="${kidSetting.iconImg}"/></div>`
+      :`<div class="cal-detail-avatar">${kidSetting.icon||k.icon}</div>`;
+    const stB=st?`<span class="mbadge" style="background:${SB[ks.status]};color:${SC[ks.status]}">${st.icon} ${st.label}</span>`
+      :`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">—</span>`;
     const pB=ks.pickup?`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">${ks.pickup==="abba"?"👨 Abba":"👩 Ima"}</span>`:"";
     const dtB=ks.dayType?`<span class="mbadge" style="background:#fff7ed;color:#c2410c">${ks.dayType==="noschool"?"🚫 No School":"🌤️ Half Day"}</span>`:"";
-    return `<div class="cal-detail-kid"><div class="cal-dn">${k.emoji} ${k.name}</div><div class="cal-badges">${stB}${pB}${dtB}</div></div>`;
-  }).join("")+(data.dailyNote?`<div style="margin-top:10px;padding:8px;background:#f8fafc;border-radius:8px;font-size:.78rem;font-weight:600;color:var(--text)">📝 ${data.dailyNote}</div>`:"");
+    return `<div class="cal-detail-kid">${avatarHtml}<div class="cal-dn">${k.name}</div><div class="cal-badges">${stB}${pB}${dtB}</div></div>`;
+  }).join("")+(data.dailyNote?`<div style="margin-top:10px;padding:8px;background:#f8fafc;border-radius:8px;font-size:.78rem;font-weight:600">📝 ${data.dailyNote}</div>`:"");
 }
 
 // ═══════════════════════════
 // SETTINGS MODAL
 // ═══════════════════════════
+// Track temp icon selections
+let tempIcons = {};
+
 function openSettings(){
-  // Populate
-  document.getElementById("s-username").value=settings.userName||"";
-  document.getElementById("s-endtime").value=settings.endTime||"14:00";
-  document.getElementById("s-halfdaytime").value=settings.halfdayTime||"12:00";
+  document.getElementById("s-username").value=userName||"";
 
-  const picker=document.getElementById("dow-picker");
-  picker.innerHTML=DOW.map((n,i)=>
-    `<div class="dow-chip${settings.schoolDays.includes(i)?" active":""}" data-dow="${i}">${n}</div>`
-  ).join("");
-  picker.querySelectorAll(".dow-chip").forEach(c=>c.addEventListener("click",()=>{
-    const dw=parseInt(c.dataset.dow);
-    const idx=settings.schoolDays.indexOf(dw);
-    if(idx>-1) settings.schoolDays.splice(idx,1); else settings.schoolDays.push(dw);
-    settings.schoolDays.sort();
-    c.classList.toggle("active",settings.schoolDays.includes(dw));
-  }));
+  // Build per-kid sections
+  const container=document.getElementById("per-kid-sections");
+  container.innerHTML="";
+  KIDS_DEFAULT.forEach(kid=>{
+    const ks=settings.kids.find(k=>k.id===kid.id)||kid;
+    tempIcons[kid.id] = {icon: ks.icon||kid.icon, iconImg: ks.iconImg||null};
 
-  const rows=document.getElementById("s-pickup-rows");
-  rows.innerHTML=KIDS.map(k=>`
-    <div class="srow">
-      <div><div class="slbl">${k.emoji} ${k.name}</div><div class="ssub">Default pickup time</div></div>
-      <div class="sctl"><input type="time" id="spt-${k.id}" value="${settings.kidPickupTimes[k.id]||''}"/></div>
-    </div>`).join("");
+    const sec=document.createElement("div");
+    sec.className="ssection";
+    sec.innerHTML=`
+      <div class="ssection-title">${ks.icon||kid.icon} ${kid.name}'s Settings</div>
+      <div class="srow">
+        <div><div class="slbl">School Days</div><div class="ssub">Days ${kid.name} goes to school</div></div>
+        <div class="sctl"><div class="dow-picker" id="dow-${kid.id}"></div></div>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">School End Time</div><div class="ssub">Regular end time</div></div>
+        <div class="sctl"><input type="time" id="set-end-${kid.id}" value="${ks.endTime||'14:00'}"/></div>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">Half Day End Time</div><div class="ssub">End time on half days</div></div>
+        <div class="sctl"><input type="time" id="set-hd-${kid.id}" value="${ks.halfdayTime||'12:00'}"/></div>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">Default Pickup Time</div></div>
+        <div class="sctl"><input type="time" id="set-pt-${kid.id}" value="${ks.pickupTime||''}"/></div>
+      </div>
+      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div><div class="slbl">Icon / Photo</div><div class="ssub">Choose an emoji or upload a photo</div></div>
+        <div class="icon-picker" id="icon-picker-${kid.id}"></div>
+        <label class="upload-btn">
+          📷 Upload photo
+          <input type="file" accept="image/*" style="display:none" onchange="handleIconUpload(event,'${kid.id}')"/>
+        </label>
+        <div id="icon-preview-${kid.id}" style="margin-top:4px"></div>
+      </div>`;
+    container.appendChild(sec);
 
-  // Notification button state
+    // DOW picker
+    const dowPicker=document.getElementById(`dow-${kid.id}`);
+    const schoolDays = ks.schoolDays||[0,1,2,3,4,5];
+    dowPicker.innerHTML=DOW.map((n,i)=>
+      `<div class="dow-chip${schoolDays.includes(i)?" active":""}" data-kid="${kid.id}" data-dow="${i}">${n}</div>`
+    ).join("");
+    dowPicker.querySelectorAll(".dow-chip").forEach(c=>c.addEventListener("click",()=>{
+      const dw=parseInt(c.dataset.dow);
+      const ks2=settings.kids.find(k=>k.id===c.dataset.kid);
+      if(!ks2.schoolDays) ks2.schoolDays=[0,1,2,3,4,5];
+      const idx=ks2.schoolDays.indexOf(dw);
+      if(idx>-1) ks2.schoolDays.splice(idx,1); else ks2.schoolDays.push(dw);
+      ks2.schoolDays.sort();
+      c.classList.toggle("active",ks2.schoolDays.includes(dw));
+    }));
+
+    // Icon picker
+    const iconPicker=document.getElementById(`icon-picker-${kid.id}`);
+    ICON_OPTIONS.forEach(ic=>{
+      const opt=document.createElement("div");
+      opt.className="icon-opt"+(tempIcons[kid.id].icon===ic&&!tempIcons[kid.id].iconImg?" selected":"");
+      opt.textContent=ic;
+      opt.addEventListener("click",()=>{
+        tempIcons[kid.id]={icon:ic,iconImg:null};
+        iconPicker.querySelectorAll(".icon-opt").forEach(o=>o.classList.remove("selected"));
+        opt.classList.add("selected");
+        document.getElementById(`icon-preview-${kid.id}`).innerHTML="";
+      });
+      iconPicker.appendChild(opt);
+    });
+
+    // If has uploaded image, show preview
+    if(ks.iconImg){
+      document.getElementById(`icon-preview-${kid.id}`).innerHTML=
+        `<img src="${ks.iconImg}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`;
+    }
+  });
+
+  // Notification button
   const nb=document.getElementById("notif-btn");
-  if(Notification.permission==="granted") nb.textContent="✅ Enabled";
-  else if(Notification.permission==="denied") nb.textContent="❌ Blocked";
+  if(!("Notification" in window)) nb.textContent="Not supported";
+  else if(Notification.permission==="granted") nb.textContent="✅ Enabled";
+  else if(Notification.permission==="denied") nb.textContent="❌ Blocked in browser";
   else nb.textContent="Enable";
 
   document.getElementById("settings-modal").classList.add("visible");
 }
 
+function handleIconUpload(event, kidId){
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    tempIcons[kidId]={icon:null,iconImg:dataUrl};
+    // Clear emoji selections
+    document.querySelectorAll(`#icon-picker-${kidId} .icon-opt`).forEach(o=>o.classList.remove("selected"));
+    document.getElementById(`icon-preview-${kidId}`).innerHTML=
+      `<img src="${dataUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`;
+  };
+  reader.readAsDataURL(file);
+}
+
 function closeSettings(){
   document.getElementById("settings-modal").classList.remove("visible");
 }
-
-function handleModalClick(e){
+function handleModalBg(e){
   if(e.target===document.getElementById("settings-modal")) closeSettings();
 }
 
 function saveSettings(){
-  settings.endTime=document.getElementById("s-endtime").value;
-  settings.halfdayTime=document.getElementById("s-halfdaytime").value;
-  settings.userName=document.getElementById("s-username").value.trim();
-  KIDS.forEach(k=>{
-    const v=document.getElementById(`spt-${k.id}`).value;
-    settings.kidPickupTimes[k.id]=v||null;
+  userName=document.getElementById("s-username").value.trim();
+  localStorage.setItem("kt_local",JSON.stringify({userName}));
+
+  KIDS_DEFAULT.forEach(kid=>{
+    const ks=settings.kids.find(k=>k.id===kid.id)||kid;
+    ks.endTime=document.getElementById(`set-end-${kid.id}`).value;
+    ks.halfdayTime=document.getElementById(`set-hd-${kid.id}`).value;
+    ks.pickupTime=document.getElementById(`set-pt-${kid.id}`).value||null;
+    if(tempIcons[kid.id]){
+      ks.icon=tempIcons[kid.id].icon||kid.icon;
+      ks.iconImg=tempIcons[kid.id].iconImg||null;
+    }
   });
-  syncSets(); applyPickupDefaults();
+
+  // Save settings to Firebase — but strip large image data to keep it small
+  const settingsForFirebase = {
+    kids: settings.kids.map(k=>({...k, iconImg:undefined}))
+  };
+  if(window._fbSet) window._fbSet(DB_SET, settingsForFirebase);
+
+  // Save icon images locally
+  const localIcons={};
+  settings.kids.forEach(k=>{ if(k.iconImg) localIcons[k.id]=k.iconImg; });
+  localStorage.setItem("kt_icons",JSON.stringify(localIcons));
+
   closeSettings();
-  schedulePickupReminders();
+  // Re-render with new settings
+  renderToday(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
+  schedulePickupReminders(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
+
+  const btn=document.querySelector(".save-btn");
+  btn.textContent="✅ Saved!";
+  setTimeout(()=>btn.textContent="💾 Save Settings",1800);
 }
 
 function resetToday(){
-  if(!confirm("Reset all statuses for today?")) return;
-  KIDS.forEach(k=>{ todayData.kids[k.id]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null}; });
-  todayData.dayType=null; todayData.dailyNote=""; todayData.noteUpdatedBy=null; todayData.noteUpdatedAt=null;
-  syncDay(); renderToday(); closeSettings();
+  if(!confirm("Reset all statuses for this day?")) return;
+  saveDayData(emptyDayData());
+  renderToday(emptyDayData());
+  closeSettings();
 }
+
+// Load local icons on startup
+(()=>{
+  try {
+    const localIcons=JSON.parse(localStorage.getItem("kt_icons")||"{}");
+    settings.kids.forEach(k=>{ if(localIcons[k.id]) k.iconImg=localIcons[k.id]; });
+  } catch(e){}
+})();
 
 // ═══════════════════════════
 // NOTIFICATIONS
 // ═══════════════════════════
 let notifTimers=[];
-
 async function requestNotifications(){
-  if(!("Notification" in window)){alert("Notifications not supported in this browser.");return;}
+  if(!("Notification" in window)){alert("Notifications not supported.");return;}
   const perm=await Notification.requestPermission();
-  document.getElementById("notif-btn").textContent=perm==="granted"?"✅ Enabled":"❌ Blocked";
-  if(perm==="granted") schedulePickupReminders();
+  document.getElementById("notif-btn").textContent=perm==="granted"?"✅ Enabled":"❌ Blocked in browser";
+  if(perm==="granted") schedulePickupReminders(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
 }
 
-function schedulePickupReminders(){
+function schedulePickupReminders(data){
   notifTimers.forEach(t=>clearTimeout(t)); notifTimers=[];
-  if(Notification.permission!=="granted") return;
-  KIDS.forEach(kid=>{
-    const pt=todayData.kids[kid.id].pickupTime||settings.kidPickupTimes[kid.id];
+  if(!("Notification" in window)||Notification.permission!=="granted") return;
+  KIDS_DEFAULT.forEach(kid=>{
+    const ks=data?.kids[kid.id]||{};
+    const kidSetting=settings.kids.find(k=>k.id===kid.id)||kid;
+    const pt=ks.pickupTime||kidSetting.pickupTime;
     if(!pt) return;
     const[ph,pm]=pt.split(":").map(Number);
-    const pickupMs=new Date(); pickupMs.setHours(ph,pm,0,0);
-    const reminderMs=new Date(pickupMs.getTime()-15*60*1000);
-    const msUntil=reminderMs.getTime()-Date.now();
-    if(msUntil>0){
-      const t=setTimeout(()=>{
-        new Notification(`🚗 Pickup reminder`,{
+    const reminderTime=new Date(); reminderTime.setHours(ph,pm-15,0,0);
+    const ms=reminderTime.getTime()-Date.now();
+    if(ms>0){
+      notifTimers.push(setTimeout(()=>{
+        new Notification("🚗 Pickup Reminder",{
           body:`${kid.name}'s pickup is in 15 minutes (${pt})`,
           icon:"https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f9d2.png"
         });
-      },msUntil);
-      notifTimers.push(t);
+      },ms));
     }
   });
 }
 
 // ═══════════════════════════
-// NAV
+// PAGE NAV
 // ═══════════════════════════
 function showPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(b=>b.classList.remove("active"));
   document.getElementById(`page-${name}`).classList.add("active");
-  document.getElementById(`nav-${name}`).classList.add("active");
+  document.getElementById(`nav-${name}`)?.classList.add("active");
+  document.getElementById("date-bar-wrap").style.display=name==="today"?"block":"none";
   if(name==="calendar") renderCalendar();
 }
 
 // ═══════════════════════════
 // HELPERS
 // ═══════════════════════════
-function fmt(date){ return date.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}); }
-setInterval(()=>KIDS.forEach(k=>renderKid(k.id)),60000);
-renderToday();
+function fmt(d){return d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});}
+setInterval(()=>{
+  const data=dayCache[getViewKey(viewDateOffset)];
+  if(data) KIDS_DEFAULT.forEach(k=>renderKid(k,data));
+},60000);
+
+updateDateBar();
+renderToday(emptyDayData());
 </script>
 </body>
 </html>
