@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KidTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCrCg11nB8I2f-3rQwN8NkwzSQrnQ9c8Rs",
+    authDomain:        "kidtracker-3e5d9.firebaseapp.com",
+    databaseURL:       "https://kidtracker-3e5d9-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "kidtracker-3e5d9",
+    storageBucket:     "kidtracker-3e5d9.firebasestorage.app",
+    messagingSenderId: "206740291278",
+    appId:             "1:206740291278:web:b48194ff4da011534b1a9f",
+    measurementId:     "G-ZZ0XNLBN56"
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    window._fbSet = (path, value) => set(ref(db, path), value);
+    window._fbOn  = (path, cb)    => onValue(ref(db, path), snap => cb(snap.val()));
+    document.dispatchEvent(new Event("firebase-ready"));
+  } catch(e) { console.warn("Firebase error:", e.message); }
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f4f6f9;
+  --card: #fff;
+  --border: #e4e9f0;
+  --text: #1c2b3a;
+  --muted: #8898aa;
+  --radius: 16px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+
+  --school: #2563eb; --school-bg: #dbeafe;
+  --ready:  #d97706; --ready-bg:  #fef3c7;
+  --sleep:  #7c3aed; --sleep-bg:  #ede9fe;
+  --off:    #475569; --off-bg:    #e2e8f0;
+  --help:   #dc2626; --help-bg:   #fee2e2;
+
+  --abba: #1d4ed8; --abba-bg: #dbeafe;
+  --ima:  #be185d; --ima-bg:  #fce7f3;
+  --none: #475569; --none-bg: #e2e8f0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 14px 12px 24px;
+  color: var(--text);
+}
+
+/* ── Page header ─────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+.page-title {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.page-title span { color: var(--muted); font-weight: 600; font-size: 0.85rem; margin-left: 6px; }
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+.live-pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.live-pip.on { background: #22c55e; animation: pip 1.4s infinite; }
+@keyframes pip { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+/* ── Cards container ─────────────────────────────── */
+.cards { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Kid card ────────────────────────────────────── */
+.kid-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px 10px;
+  border-bottom: 1.5px solid var(--border);
+  transition: background 0.3s;
+}
+.kid-emoji {
+  font-size: 1.5rem;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #f0f4f8;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.kid-info { flex: 1; min-width: 0; }
+.kid-name { font-weight: 900; font-size: 1rem; line-height: 1; }
+.kid-sublabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 3px;
+  color: var(--muted);
+  transition: color 0.3s;
+}
+.kid-time { font-size: 0.62rem; color: #b0bec5; font-weight: 600; margin-top: 1px; }
+
+.status-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+  transition: all 0.25s;
+  flex-shrink: 0;
+}
+
+/* ── Card body ───────────────────────────────────── */
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.card-section {
+  padding: 10px 12px 11px;
+}
+.card-section:first-child {
+  border-right: 1.5px solid var(--border);
+}
+.section-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  background: #f1f5f9;
+  color: var(--muted);
+  transition: all 0.12s;
+  white-space: nowrap;
+  user-select: none;
+}
+.chip:hover { filter: brightness(0.93); transform: translateY(-1px); }
+.chip:active { transform: scale(0.95); }
+
+/* Status active colors */
+.chip[data-status="school"].active { background:var(--school-bg); color:var(--school); border-color:var(--school); }
+.chip[data-status="ready"].active  { background:var(--ready-bg);  color:var(--ready);  border-color:var(--ready);  }
+.chip[data-status="sleep"].active  { background:var(--sleep-bg);  color:var(--sleep);  border-color:var(--sleep);  }
+.chip[data-status="off"].active    { background:var(--off-bg);    color:var(--off);    border-color:var(--off);    }
+.chip[data-status="help"].active   { background:var(--help-bg);   color:var(--help);   border-color:var(--help);   }
+
+/* Pickup active colors */
+.chip[data-pickup="abba"].active { background:var(--abba-bg); color:var(--abba); border-color:var(--abba); }
+.chip[data-pickup="ima"].active  { background:var(--ima-bg);  color:var(--ima);  border-color:var(--ima);  }
+.chip[data-pickup="none"].active { background:var(--none-bg); color:var(--none); border-color:var(--none); }
+
+/* Day off note */
+.day-off-note { display: none; margin-top: 7px; }
+.day-off-note.visible { display: block; }
+.day-off-note input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.day-off-note input:focus { border-color: var(--off); }
+.day-off-note input::placeholder { color: #c0ccd8; }
+
+/* Time picker */
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  background: #f8fafc;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 9px;
+  width: fit-content;
+}
+.time-row span { font-size: 0.72rem; color: var(--muted); }
+.time-row input[type="time"] {
+  border: none; background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 0.75rem;
+  color: var(--text); outline: none; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">🧒 KidTracker <span id="today-label"></span></div>
+  <div class="live-pill"><div class="live-pip" id="live-pip"></div><span id="live-label">Connecting</span></div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<script>
+const KIDS = [
+  { id:"shlomo",   name:"Shlomo",   emoji:"👦", pickupTime:"15:30", noPickup:false },
+  { id:"zecharya", name:"Zecharya", emoji:"🧒", pickupTime:"16:45", noPickup:false },
+  { id:"rivka",    name:"Rivka",    emoji:"👧", pickupTime:null,    noPickup:true  },
+];
+const STATUSES = [
+  { key:"school", icon:"🏫", label:"In School" },
+  { key:"ready",  icon:"🎒", label:"Getting Ready" },
+  { key:"sleep",  icon:"😴", label:"Sleeping" },
+  { key:"off",    icon:"🏖️",  label:"Day Off" },
+  { key:"help",   icon:"🆘", label:"Need Abba's Help" },
+];
+const S_COLOR = { school:"#2563eb", ready:"#d97706", sleep:"#7c3aed", off:"#475569", help:"#dc2626" };
+const S_BG    = { school:"#dbeafe", ready:"#fef3c7", sleep:"#ede9fe", off:"#e2e8f0", help:"#fee2e2" };
+
+// State
+let state = {};
+KIDS.forEach(k => { state[k.id] = { status:null, dayOffNote:"", pickup:null, pickupTime:k.pickupTime, updatedAt:null }; });
+
+// Date label
+const d = new Date();
+document.getElementById("today-label").textContent =
+  d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+
+// Firebase
+const DB = "kidtracker/today";
+function syncKid(id) { if (window._fbSet) window._fbSet(`${DB}/${id}`, state[id]); }
+
+document.addEventListener("firebase-ready", () => {
+  window._fbOn(DB, data => {
+    if (!data) return;
+    KIDS.forEach(k => {
+      if (data[k.id]) state[k.id] = { ...state[k.id], ...data[k.id], pickupTime: data[k.id].pickupTime ?? state[k.id].pickupTime };
+    });
+    renderAll();
+  });
+  document.getElementById("live-pip").classList.add("on");
+  document.getElementById("live-label").textContent = "Live";
+});
+
+// Build UI
+const container = document.getElementById("cards");
+KIDS.forEach(kid => {
+  const card = document.createElement("div");
+  card.className = "kid-card";
+  card.id = `card-${kid.id}`;
+
+  card.innerHTML = `
+    <div class="card-top" id="top-${kid.id}">
+      <div class="kid-emoji" id="avatar-${kid.id}">${kid.emoji}</div>
+      <div class="kid-info">
+        <div class="kid-name">${kid.name}</div>
+        <div class="kid-sublabel" id="sublabel-${kid.id}">No status yet</div>
+        <div class="kid-time" id="time-${kid.id}"></div>
+      </div>
+      <div class="status-badge" id="badge-${kid.id}">—</div>
+    </div>
+    <div class="card-body">
+      <div class="card-section">
+        <div class="section-label">Status</div>
+        <div class="chips">
+          ${STATUSES.map(s => `<button class="chip" data-kid="${kid.id}" data-status="${s.key}">${s.icon} ${s.label}</button>`).join("")}
+        </div>
+        <div class="day-off-note" id="note-wrap-${kid.id}">
+          <input type="text" id="note-${kid.id}" placeholder="Reason (holiday, sick…)" />
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="section-label">Pickup</div>
+        <div class="chips">
+          <button class="chip" data-kid="${kid.id}" data-pickup="abba">👨 Abba</button>
+          <button class="chip" data-kid="${kid.id}" data-pickup="ima">👩 Ima</button>
+          ${kid.noPickup ? `<button class="chip" data-kid="${kid.id}" data-pickup="none">🚶 None</button>` : ""}
+        </div>
+        ${!kid.noPickup ? `
+        <div class="time-row">
+          <span>🕐</span>
+          <input type="time" class="pickup-time" data-kid="${kid.id}" value="${kid.pickupTime}" />
+        </div>` : ""}
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+
+  // Status chips
+  card.querySelectorAll(".chip[data-status]").forEach(btn => btn.addEventListener("click", () => {
+    const id = btn.dataset.kid, st = btn.dataset.status;
+    state[id].status = state[id].status === st ? null : st;
+    if (state[id].status !== "off") state[id].dayOffNote = "";
+    state[id].updatedAt = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+    syncKid(id); renderKid(id);
+  }));
+
+  // Day off note
+  document.getElementById(`note-${kid.id}`).addEventListener("input", e => {
+    state[kid.id].dayOffNote = e.target.value; syncKid(kid.id);
+  });
+
+  // Pickup chips
+  card.querySelectorAll(".chip[data-pickup]").forEach(btn => btn.addEventListener("click", () => {
+    const id = btn.dataset.kid, p = btn.dataset.pickup;
+    state[id].pickup = state[id].pickup === p ? null : p;
+    state[id].updatedAt = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+    syncKid(id); renderKid(id);
+  }));
+
+  // Time picker
+  const tp = card.querySelector(".pickup-time");
+  if (tp) tp.addEventListener("change", () => { state[kid.id].pickupTime = tp.value; syncKid(kid.id); });
+});
+
+function renderKid(id) {
+  const s = state[id];
+  const st = STATUSES.find(x => x.key === s.status);
+
+  // Badge & sublabel
+  const badge = document.getElementById(`badge-${id}`);
+  const sublabel = document.getElementById(`sublabel-${id}`);
+  if (st) {
+    badge.textContent = `${st.icon} ${st.label}`;
+    badge.style.background = S_BG[s.status];
+    badge.style.color = S_COLOR[s.status];
+    sublabel.textContent = `${st.icon} ${st.label}`;
+    sublabel.style.color = S_COLOR[s.status];
+  } else {
+    badge.textContent = "—"; badge.style.background = ""; badge.style.color = "";
+    sublabel.textContent = "No status yet"; sublabel.style.color = "";
+  }
+
+  // Card top tint
+  document.getElementById(`top-${id}`).style.background = s.status ? S_BG[s.status] + "66" : "";
+
+  // Updated time
+  document.getElementById(`time-${id}`).textContent = s.updatedAt ? `Updated ${s.updatedAt}` : "";
+
+  // Chip states
+  document.querySelectorAll(`.chip[data-kid="${id}"][data-status]`).forEach(b => b.classList.toggle("active", b.dataset.status === s.status));
+  document.querySelectorAll(`.chip[data-kid="${id}"][data-pickup]`).forEach(b => b.classList.toggle("active", b.dataset.pickup === s.pickup));
+
+  // Day off note
+  const nw = document.getElementById(`note-wrap-${id}`);
+  const ni = document.getElementById(`note-${id}`);
+  nw.classList.toggle("visible", s.status === "off");
+  if (ni.value !== (s.dayOffNote || "")) ni.value = s.dayOffNote || "";
+
+  // Time picker sync
+  const tp = document.querySelector(`.pickup-time[data-kid="${id}"]`);
+  if (tp && s.pickupTime && tp.value !== s.pickupTime) tp.value = s.pickupTime;
+}
+
+function renderAll() { KIDS.forEach(k => renderKid(k.id)); }
+renderAll();
+</script>
+</body>
+</html>
