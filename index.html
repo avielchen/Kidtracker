@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="KidTracker" />
 <title>KidTracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
   const firebaseConfig = {
     apiKey:            "AIzaSyCrCg11nB8I2f-3rQwN8NkwzSQrnQ9c8Rs",
     authDomain:        "kidtracker-3e5d9.firebaseapp.com",
@@ -20,7 +22,6 @@
     appId:             "1:206740291278:web:b48194ff4da011534b1a9f",
     measurementId:     "G-ZZ0XNLBN56"
   };
-
   try {
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
@@ -32,15 +33,18 @@
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
 
 :root {
-  --bg: #f4f6f9;
+  --bg: #f0f4f9;
   --card: #fff;
-  --border: #e4e9f0;
+  --border: #e2e8f0;
   --text: #1c2b3a;
   --muted: #8898aa;
-  --radius: 16px;
-  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --radius: 14px;
+  --shadow: 0 2px 14px rgba(0,0,0,0.07);
+  --max-w: 640px;
+  --nav-h: 56px;
 
   --school: #2563eb; --school-bg: #dbeafe;
   --ready:  #d97706; --ready-bg:  #fef3c7;
@@ -50,213 +54,472 @@
 
   --abba: #1d4ed8; --abba-bg: #dbeafe;
   --ima:  #be185d; --ima-bg:  #fce7f3;
-  --none: #475569; --none-bg: #e2e8f0;
 }
 
 body {
   font-family: 'Nunito', sans-serif;
   background: var(--bg);
   min-height: 100vh;
-  padding: 14px 12px 24px;
   color: var(--text);
+  padding-bottom: calc(var(--nav-h) + 8px);
 }
 
-/* ── Page header ─────────────────────────────────── */
+/* ── Bottom nav ─────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--card);
+  border-top: 1.5px solid var(--border);
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+.nav-inner {
+  display: flex;
+  width: 100%;
+  max-width: var(--max-w);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 4px;
+  transition: background 0.15s;
+  border-radius: 0;
+  font-family: 'Nunito', sans-serif;
+}
+.nav-btn:hover { background: #f8fafc; }
+.nav-btn .nav-icon { font-size: 1.2rem; line-height: 1; }
+.nav-btn .nav-label { font-size: 0.62rem; font-weight: 700; color: var(--muted); letter-spacing: 0.3px; }
+.nav-btn.active .nav-label { color: var(--school); }
+.nav-btn.active .nav-icon { filter: none; }
+
+/* ── Page wrapper ───────────────────────────────── */
+.page { display: none; padding: 14px 12px 0; max-width: var(--max-w); margin: 0 auto; }
+.page.active { display: block; }
+
+/* ── Page header ────────────────────────────────── */
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
-  padding: 0 2px;
+  margin-bottom: 12px;
 }
-.page-title {
-  font-size: 1.3rem;
-  font-weight: 900;
-  color: var(--text);
-  letter-spacing: -0.5px;
-}
-.page-title span { color: var(--muted); font-weight: 600; font-size: 0.85rem; margin-left: 6px; }
+.page-title { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.4px; }
+.page-title small { font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-left: 6px; }
 .live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: var(--muted);
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 10px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.68rem; font-weight: 800; color: var(--muted);
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 3px 9px;
 }
-.live-pip {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #94a3b8;
-}
-.live-pip.on { background: #22c55e; animation: pip 1.4s infinite; }
-@keyframes pip { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+.live-pip { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; }
+.live-pip.on { background: #22c55e; animation: pip 1.5s infinite; }
+@keyframes pip { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-/* ── Cards container ─────────────────────────────── */
+/* ── No-school banner ───────────────────────────── */
+#no-school-banner {
+  background: #fff7ed;
+  border: 1.5px solid #fb923c;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9a3412;
+  margin-bottom: 10px;
+  display: none;
+  text-align: center;
+}
+
+/* ── Kid cards ──────────────────────────────────── */
 .cards { display: flex; flex-direction: column; gap: 10px; }
 
-/* ── Kid card ────────────────────────────────────── */
 .kid-card {
   background: var(--card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: border-color 0.3s;
 }
 
 .card-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px 10px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px;
   border-bottom: 1.5px solid var(--border);
   transition: background 0.3s;
 }
 .kid-emoji {
-  font-size: 1.5rem;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: #f0f4f8;
-  flex-shrink: 0;
-  transition: background 0.3s;
+  font-size: 1.4rem; width: 36px; height: 36px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: #f0f4f8; flex-shrink: 0;
 }
 .kid-info { flex: 1; min-width: 0; }
-.kid-name { font-weight: 900; font-size: 1rem; line-height: 1; }
-.kid-sublabel {
-  font-size: 0.7rem;
-  font-weight: 700;
-  margin-top: 3px;
-  color: var(--muted);
-  transition: color 0.3s;
-}
-.kid-time { font-size: 0.62rem; color: #b0bec5; font-weight: 600; margin-top: 1px; }
-
+.kid-name { font-weight: 900; font-size: 0.95rem; line-height: 1; }
+.kid-sublabel { font-size: 0.68rem; font-weight: 700; color: var(--muted); margin-top: 2px; transition: color 0.2s; }
+.kid-meta { font-size: 0.6rem; color: #b0bec5; font-weight: 600; margin-top: 1px; }
 .status-badge {
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 3px 9px;
-  border-radius: 20px;
-  background: var(--border);
-  color: var(--muted);
-  white-space: nowrap;
-  transition: all 0.25s;
-  flex-shrink: 0;
+  font-size: 0.65rem; font-weight: 800;
+  padding: 3px 8px; border-radius: 20px;
+  background: var(--border); color: var(--muted);
+  white-space: nowrap; flex-shrink: 0; transition: all 0.25s;
 }
 
-/* ── Card body ───────────────────────────────────── */
-.card-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-}
-.card-section {
-  padding: 10px 12px 11px;
-}
-.card-section:first-child {
-  border-right: 1.5px solid var(--border);
-}
+.card-body { display: grid; grid-template-columns: 1fr 1fr; }
+.card-section { padding: 9px 11px 10px; }
+.card-section:first-child { border-right: 1.5px solid var(--border); }
 .section-label {
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-  color: var(--muted);
-  margin-bottom: 7px;
+  font-size: 0.58rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.7px;
+  color: var(--muted); margin-bottom: 6px;
 }
-.chips { display: flex; flex-wrap: wrap; gap: 5px; }
 
+/* ── Chips ──────────────────────────────────────── */
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px 9px;
-  border-radius: 20px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 0.7rem;
-  cursor: pointer;
-  border: 1.5px solid transparent;
-  background: #f1f5f9;
-  color: var(--muted);
-  transition: all 0.12s;
-  white-space: nowrap;
-  user-select: none;
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 4px 9px; border-radius: 20px;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.68rem;
+  cursor: pointer; border: 1.5px solid transparent;
+  background: #f1f5f9; color: var(--muted);
+  transition: all 0.12s; white-space: nowrap; user-select: none;
 }
 .chip:hover { filter: brightness(0.93); transform: translateY(-1px); }
 .chip:active { transform: scale(0.95); }
 
-/* Status active colors */
 .chip[data-status="school"].active { background:var(--school-bg); color:var(--school); border-color:var(--school); }
 .chip[data-status="ready"].active  { background:var(--ready-bg);  color:var(--ready);  border-color:var(--ready);  }
 .chip[data-status="sleep"].active  { background:var(--sleep-bg);  color:var(--sleep);  border-color:var(--sleep);  }
 .chip[data-status="off"].active    { background:var(--off-bg);    color:var(--off);    border-color:var(--off);    }
 .chip[data-status="help"].active   { background:var(--help-bg);   color:var(--help);   border-color:var(--help);   }
+.chip[data-pickup="abba"].active   { background:var(--abba-bg);   color:var(--abba);   border-color:var(--abba);   }
+.chip[data-pickup="ima"].active    { background:var(--ima-bg);    color:var(--ima);    border-color:var(--ima);    }
+.chip[data-daytype="noschool"].active { background:#fff7ed; color:#c2410c; border-color:#fb923c; }
+.chip[data-daytype="halfday"].active  { background:#f0fdf4; color:#15803d; border-color:#4ade80; }
 
-/* Pickup active colors */
-.chip[data-pickup="abba"].active { background:var(--abba-bg); color:var(--abba); border-color:var(--abba); }
-.chip[data-pickup="ima"].active  { background:var(--ima-bg);  color:var(--ima);  border-color:var(--ima);  }
-.chip[data-pickup="none"].active { background:var(--none-bg); color:var(--none); border-color:var(--none); }
-
-/* Day off note */
-.day-off-note { display: none; margin-top: 7px; }
+.day-off-note { display: none; margin-top: 6px; }
 .day-off-note.visible { display: block; }
 .day-off-note input {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 5px 9px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text);
-  background: #f8fafc;
-  outline: none;
-  transition: border-color 0.2s;
+  width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 5px 9px; font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem; font-weight: 600; color: var(--text);
+  background: #f8fafc; outline: none; transition: border-color 0.2s;
 }
 .day-off-note input:focus { border-color: var(--off); }
 .day-off-note input::placeholder { color: #c0ccd8; }
 
-/* Time picker */
 .time-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 8px;
-  background: #f8fafc;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 4px 9px;
-  width: fit-content;
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 7px; background: #f8fafc;
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 4px 8px;
 }
-.time-row span { font-size: 0.72rem; color: var(--muted); }
+.time-row span { font-size: 0.7rem; color: var(--muted); }
 .time-row input[type="time"] {
   border: none; background: transparent;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700; font-size: 0.75rem;
-  color: var(--text); outline: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
+  font-size: 0.73rem; color: var(--text); outline: none; cursor: pointer;
 }
+
+/* pickup-time highlight when close */
+.time-row.soon { border-color: #fb923c; background: #fff7ed; }
+.time-row.soon span, .time-row.soon input { color: #c2410c; }
+
+/* ── Daily note ─────────────────────────────────── */
+.daily-note-section {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 11px 13px;
+  margin-top: 10px;
+}
+.daily-note-section textarea {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 7px 10px; font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem; font-weight: 600; color: var(--text);
+  background: #f8fafc; outline: none; resize: none;
+  transition: border-color 0.2s; min-height: 56px;
+}
+.daily-note-section textarea:focus { border-color: #60a5fa; }
+.daily-note-section textarea::placeholder { color: #c0ccd8; }
+.note-meta { font-size: 0.6rem; color: #b0bec5; margin-top: 4px; }
+
+/* ── Calendar page ──────────────────────────────── */
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-nav button {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 5px 12px; font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 0.8rem; cursor: pointer; color: var(--text);
+  transition: background 0.15s;
+}
+.cal-nav button:hover { background: #f1f5f9; }
+.cal-month { font-weight: 900; font-size: 1rem; }
+
+.cal-grid {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+}
+.cal-dow-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1.5px solid var(--border);
+}
+.cal-dow {
+  text-align: center; padding: 6px 2px;
+  font-size: 0.62rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
+}
+.cal-dow.weekend { color: #f87171; }
+.cal-days {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+}
+.cal-day {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 4px 3px 5px;
+  min-height: 62px;
+  cursor: pointer;
+  transition: background 0.12s;
+  position: relative;
+}
+.cal-day:nth-child(7n) { border-right: none; }
+.cal-day:hover { background: #f8fafc; }
+.cal-day.today { background: #eff6ff; }
+.cal-day.today .cal-day-num { color: var(--school); font-weight: 900; }
+.cal-day.other-month { background: #fafafa; }
+.cal-day.other-month .cal-day-num { color: #d1d5db; }
+.cal-day.no-school-day { background: #fff7ed; }
+.cal-day-num {
+  font-size: 0.72rem; font-weight: 800; color: var(--text);
+  display: block; text-align: center; margin-bottom: 3px;
+}
+.cal-dots {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  justify-content: center;
+}
+.cal-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.cal-day-label {
+  font-size: 0.48rem; font-weight: 800; text-align: center;
+  color: #c2410c; margin-top: 2px; line-height: 1.1;
+}
+
+/* Cal detail panel */
+.cal-detail {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  margin-top: 10px; padding: 13px; display: none;
+}
+.cal-detail.visible { display: block; }
+.cal-detail-title { font-weight: 900; font-size: 0.95rem; margin-bottom: 10px; }
+.cal-detail-kid {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+}
+.cal-detail-kid:last-child { border-bottom: none; }
+.cal-detail-name { font-weight: 800; font-size: 0.82rem; width: 70px; flex-shrink: 0; }
+.cal-detail-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+.mini-badge {
+  font-size: 0.65rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+}
+
+/* ── Settings page ──────────────────────────────── */
+.settings-section {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  margin-bottom: 12px; overflow: hidden;
+}
+.settings-section-title {
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.7px; color: var(--muted);
+  padding: 10px 13px 8px; border-bottom: 1.5px solid var(--border);
+  background: #f8fafc;
+}
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 13px; border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 0.82rem; font-weight: 700; }
+.settings-sub { font-size: 0.67rem; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.settings-control { flex-shrink: 0; }
+.settings-control input[type="time"] {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 5px 9px; font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 0.8rem; color: var(--text);
+  outline: none; background: #f8fafc; cursor: pointer;
+}
+.settings-control input[type="time"]:focus { border-color: #60a5fa; }
+.settings-control input[type="text"] {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 5px 9px; font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 0.8rem; color: var(--text);
+  outline: none; background: #f8fafc; width: 120px;
+}
+.settings-control input[type="text"]:focus { border-color: #60a5fa; }
+
+.dow-picker { display: flex; gap: 5px; flex-wrap: wrap; }
+.dow-chip {
+  padding: 4px 9px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+  cursor: pointer; border: 1.5px solid var(--border);
+  background: #f1f5f9; color: var(--muted); user-select: none;
+  transition: all 0.12s;
+}
+.dow-chip.active { background: var(--school-bg); color: var(--school); border-color: var(--school); }
+.dow-chip.off-day { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+.save-btn {
+  width: 100%; padding: 12px; border: none; border-radius: 10px;
+  background: var(--school); color: white; font-family: 'Nunito', sans-serif;
+  font-weight: 800; font-size: 0.9rem; cursor: pointer;
+  transition: background 0.15s; margin-top: 4px;
+}
+.save-btn:hover { background: #1d4ed8; }
+
+.reset-btn {
+  width: 100%; padding: 10px; border: 1.5px solid #fca5a5; border-radius: 10px;
+  background: #fff5f5; color: #dc2626; font-family: 'Nunito', sans-serif;
+  font-weight: 800; font-size: 0.82rem; cursor: pointer;
+  transition: all 0.15s; margin-top: 8px;
+}
+.reset-btn:hover { background: #fee2e2; }
 </style>
 </head>
 <body>
 
-<div class="page-header">
-  <div class="page-title">🧒 KidTracker <span id="today-label"></span></div>
-  <div class="live-pill"><div class="live-pip" id="live-pip"></div><span id="live-label">Connecting</span></div>
+<!-- ══ TODAY PAGE ══════════════════════════════════ -->
+<div class="page active" id="page-today">
+  <div class="page-header">
+    <div class="page-title">🧒 KidTracker <small id="today-label"></small></div>
+    <div class="live-pill"><div class="live-pip" id="live-pip"></div><span id="live-label">Connecting</span></div>
+  </div>
+  <div id="no-school-banner"></div>
+  <div class="cards" id="cards"></div>
+  <div class="daily-note-section" id="daily-note-section">
+    <div class="section-label">📝 Daily Note</div>
+    <textarea id="daily-note" placeholder="Shared note for today — reminders, updates, anything…" rows="2"></textarea>
+    <div class="note-meta" id="note-meta"></div>
+  </div>
 </div>
 
-<div class="cards" id="cards"></div>
+<!-- ══ CALENDAR PAGE ═══════════════════════════════ -->
+<div class="page" id="page-calendar">
+  <div class="page-header">
+    <div class="page-title">📅 Calendar</div>
+  </div>
+  <div class="cal-nav">
+    <button id="cal-prev">‹ Prev</button>
+    <div class="cal-month" id="cal-month-label"></div>
+    <button id="cal-next">Next ›</button>
+  </div>
+  <div class="cal-grid">
+    <div class="cal-dow-row" id="cal-dow-row"></div>
+    <div class="cal-days" id="cal-days"></div>
+  </div>
+  <div class="cal-detail" id="cal-detail">
+    <div class="cal-detail-title" id="cal-detail-title"></div>
+    <div id="cal-detail-body"></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS PAGE ══════════════════════════════ -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <div class="page-title">⚙️ Settings</div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">School Schedule</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">School Days</div>
+        <div class="settings-sub">Days kids go to school</div>
+      </div>
+      <div class="settings-control">
+        <div class="dow-picker" id="school-days-picker"></div>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Default End Time</div>
+        <div class="settings-sub">Regular school end time</div>
+      </div>
+      <div class="settings-control">
+        <input type="time" id="setting-end-time" value="14:00" />
+      </div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Half Day End Time</div>
+        <div class="settings-sub">End time on half days</div>
+      </div>
+      <div class="settings-control">
+        <input type="time" id="setting-halfday-time" value="12:00" />
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Kids — Default Pickup Times</div>
+    <div id="kid-pickup-settings"></div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Your Name</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Who are you?</div>
+        <div class="settings-sub">Shows on updates ("by Abba")</div>
+      </div>
+      <div class="settings-control">
+        <input type="text" id="setting-user-name" placeholder="e.g. Abba or Ima" />
+      </div>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveSettings()">💾 Save Settings</button>
+  <button class="reset-btn" onclick="resetToday()">🔄 Reset Today's Statuses</button>
+</div>
+
+<!-- ══ BOTTOM NAV ══════════════════════════════════ -->
+<nav class="bottom-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" id="nav-today" onclick="showPage('today')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Today</span>
+    </button>
+    <button class="nav-btn" id="nav-calendar" onclick="showPage('calendar')">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Calendar</span>
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="showPage('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Settings</span>
+    </button>
+  </div>
+</nav>
 
 <script>
+// ═══════════════════════════════════════════════════
+// CONFIG & STATE
+// ═══════════════════════════════════════════════════
 const KIDS = [
-  { id:"shlomo",   name:"Shlomo",   emoji:"👦", pickupTime:"15:30", noPickup:false },
-  { id:"zecharya", name:"Zecharya", emoji:"🧒", pickupTime:"16:45", noPickup:false },
-  { id:"rivka",    name:"Rivka",    emoji:"👧", pickupTime:null,    noPickup:true  },
+  { id:"shlomo",   name:"Shlomo",   emoji:"👦" },
+  { id:"zecharya", name:"Zecharya", emoji:"🧒" },
+  { id:"rivka",    name:"Rivka",    emoji:"👧" },
 ];
 const STATUSES = [
   { key:"school", icon:"🏫", label:"In School" },
@@ -267,46 +530,107 @@ const STATUSES = [
 ];
 const S_COLOR = { school:"#2563eb", ready:"#d97706", sleep:"#7c3aed", off:"#475569", help:"#dc2626" };
 const S_BG    = { school:"#dbeafe", ready:"#fef3c7", sleep:"#ede9fe", off:"#e2e8f0", help:"#fee2e2" };
+const DOW_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-// State
-let state = {};
-KIDS.forEach(k => { state[k.id] = { status:null, dayOffNote:"", pickup:null, pickupTime:k.pickupTime, updatedAt:null }; });
+// Default settings
+let settings = {
+  schoolDays: [0,1,2,3,4,5], // Sun-Fri (Israel)
+  endTime: "14:00",
+  halfdayTime: "12:00",
+  userName: "",
+  kidPickupTimes: { shlomo:"15:30", zecharya:"16:45", rivka:null },
+};
 
-// Date label
-const d = new Date();
-document.getElementById("today-label").textContent =
-  d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+// Today's data
+let todayData = {
+  dayType: null, // null | "noschool" | "halfday"
+  dailyNote: "",
+  noteUpdatedBy: null,
+  noteUpdatedAt: null,
+  kids: {}
+};
+KIDS.forEach(k => {
+  todayData.kids[k.id] = { status:null, dayOffNote:"", pickup:null, pickupTime:null, updatedAt:null, updatedBy:null };
+});
 
-// Firebase
-const DB = "kidtracker/today";
-function syncKid(id) { if (window._fbSet) window._fbSet(`${DB}/${id}`, state[id]); }
+// History data (all days)
+let historyData = {};
+
+const todayKey = new Date().toISOString().split("T")[0];
+
+// ═══════════════════════════════════════════════════
+// PAGE NAV
+// ═══════════════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(`page-${name}`).classList.add("active");
+  document.getElementById(`nav-${name}`).classList.add("active");
+  if (name === "calendar") renderCalendar();
+  if (name === "settings") renderSettings();
+}
+
+// ═══════════════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════════════
+const DB_TODAY    = `kidtracker/days/${todayKey}`;
+const DB_HISTORY  = `kidtracker/days`;
+const DB_SETTINGS = `kidtracker/settings`;
+
+function syncToday() {
+  if (window._fbSet) window._fbSet(DB_TODAY, todayData);
+}
+function syncSettings() {
+  if (window._fbSet) window._fbSet(DB_SETTINGS, settings);
+}
 
 document.addEventListener("firebase-ready", () => {
-  window._fbOn(DB, data => {
-    if (!data) return;
-    KIDS.forEach(k => {
-      if (data[k.id]) state[k.id] = { ...state[k.id], ...data[k.id], pickupTime: data[k.id].pickupTime ?? state[k.id].pickupTime };
-    });
-    renderAll();
+  // Listen today
+  window._fbOn(DB_TODAY, data => {
+    if (data) {
+      todayData = { ...todayData, ...data, kids: { ...todayData.kids, ...(data.kids || {}) } };
+      KIDS.forEach(k => {
+        todayData.kids[k.id] = { ...todayData.kids[k.id], ...(data.kids?.[k.id] || {}) };
+      });
+    }
+    renderToday();
+  });
+  // Listen history (for calendar)
+  window._fbOn(DB_HISTORY, data => {
+    if (data) historyData = data;
+  });
+  // Listen settings
+  window._fbOn(DB_SETTINGS, data => {
+    if (data) {
+      settings = { ...settings, ...data };
+      if (data.kidPickupTimes) settings.kidPickupTimes = { ...settings.kidPickupTimes, ...data.kidPickupTimes };
+      applySettingsToCards();
+    }
   });
   document.getElementById("live-pip").classList.add("on");
   document.getElementById("live-label").textContent = "Live";
 });
 
-// Build UI
+// ═══════════════════════════════════════════════════
+// BUILD TODAY UI
+// ═══════════════════════════════════════════════════
+const d = new Date();
+document.getElementById("today-label").textContent =
+  d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+
 const container = document.getElementById("cards");
+
 KIDS.forEach(kid => {
   const card = document.createElement("div");
-  card.className = "kid-card";
-  card.id = `card-${kid.id}`;
+  card.className = "kid-card"; card.id = `card-${kid.id}`;
 
   card.innerHTML = `
     <div class="card-top" id="top-${kid.id}">
-      <div class="kid-emoji" id="avatar-${kid.id}">${kid.emoji}</div>
+      <div class="kid-emoji">${kid.emoji}</div>
       <div class="kid-info">
         <div class="kid-name">${kid.name}</div>
         <div class="kid-sublabel" id="sublabel-${kid.id}">No status yet</div>
-        <div class="kid-time" id="time-${kid.id}"></div>
+        <div class="kid-meta" id="meta-${kid.id}"></div>
       </div>
       <div class="status-badge" id="badge-${kid.id}">—</div>
     </div>
@@ -314,24 +638,26 @@ KIDS.forEach(kid => {
       <div class="card-section">
         <div class="section-label">Status</div>
         <div class="chips">
-          ${STATUSES.map(s => `<button class="chip" data-kid="${kid.id}" data-status="${s.key}">${s.icon} ${s.label}</button>`).join("")}
+          ${STATUSES.map(s=>`<button class="chip" data-kid="${kid.id}" data-status="${s.key}">${s.icon} ${s.label}</button>`).join("")}
         </div>
         <div class="day-off-note" id="note-wrap-${kid.id}">
           <input type="text" id="note-${kid.id}" placeholder="Reason (holiday, sick…)" />
         </div>
       </div>
       <div class="card-section">
-        <div class="section-label">Pickup</div>
+        <div class="section-label">Pickup & Day</div>
         <div class="chips">
           <button class="chip" data-kid="${kid.id}" data-pickup="abba">👨 Abba</button>
           <button class="chip" data-kid="${kid.id}" data-pickup="ima">👩 Ima</button>
-          ${kid.noPickup ? `<button class="chip" data-kid="${kid.id}" data-pickup="none">🚶 None</button>` : ""}
         </div>
-        ${!kid.noPickup ? `
-        <div class="time-row">
+        <div class="chips" style="margin-top:5px">
+          <button class="chip" data-kid="${kid.id}" data-daytype="noschool">🚫 No School</button>
+          <button class="chip" data-kid="${kid.id}" data-daytype="halfday">🌤️ Half Day</button>
+        </div>
+        <div class="time-row" id="time-row-${kid.id}">
           <span>🕐</span>
-          <input type="time" class="pickup-time" data-kid="${kid.id}" value="${kid.pickupTime}" />
-        </div>` : ""}
+          <input type="time" class="pickup-time" data-kid="${kid.id}" value="${settings.kidPickupTimes[kid.id] || ''}" ${!settings.kidPickupTimes[kid.id] ? 'style="display:none"' : ''} />
+        </div>
       </div>
     </div>
   `;
@@ -339,58 +665,112 @@ KIDS.forEach(kid => {
 
   // Status chips
   card.querySelectorAll(".chip[data-status]").forEach(btn => btn.addEventListener("click", () => {
-    const id = btn.dataset.kid, st = btn.dataset.status;
-    state[id].status = state[id].status === st ? null : st;
-    if (state[id].status !== "off") state[id].dayOffNote = "";
-    state[id].updatedAt = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
-    syncKid(id); renderKid(id);
+    const id=btn.dataset.kid, st=btn.dataset.status;
+    todayData.kids[id].status = todayData.kids[id].status===st ? null : st;
+    if (todayData.kids[id].status !== "off") todayData.kids[id].dayOffNote = "";
+    todayData.kids[id].updatedAt = fmt(new Date());
+    todayData.kids[id].updatedBy = settings.userName || null;
+    syncToday(); renderKid(id);
   }));
 
   // Day off note
   document.getElementById(`note-${kid.id}`).addEventListener("input", e => {
-    state[kid.id].dayOffNote = e.target.value; syncKid(kid.id);
+    todayData.kids[kid.id].dayOffNote = e.target.value; syncToday();
   });
 
   // Pickup chips
   card.querySelectorAll(".chip[data-pickup]").forEach(btn => btn.addEventListener("click", () => {
-    const id = btn.dataset.kid, p = btn.dataset.pickup;
-    state[id].pickup = state[id].pickup === p ? null : p;
-    state[id].updatedAt = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
-    syncKid(id); renderKid(id);
+    const id=btn.dataset.kid, p=btn.dataset.pickup;
+    todayData.kids[id].pickup = todayData.kids[id].pickup===p ? null : p;
+    todayData.kids[id].updatedAt = fmt(new Date());
+    todayData.kids[id].updatedBy = settings.userName || null;
+    syncToday(); renderKid(id);
+  }));
+
+  // Day type chips (no school / half day) — per kid
+  card.querySelectorAll(".chip[data-daytype]").forEach(btn => btn.addEventListener("click", () => {
+    const id=btn.dataset.kid, dt=btn.dataset.daytype;
+    todayData.kids[id].dayType = todayData.kids[id].dayType===dt ? null : dt;
+    todayData.kids[id].updatedAt = fmt(new Date());
+    todayData.kids[id].updatedBy = settings.userName || null;
+    syncToday(); renderKid(id);
   }));
 
   // Time picker
   const tp = card.querySelector(".pickup-time");
-  if (tp) tp.addEventListener("change", () => { state[kid.id].pickupTime = tp.value; syncKid(kid.id); });
+  if (tp) tp.addEventListener("change", () => {
+    todayData.kids[kid.id].pickupTime = tp.value; syncToday();
+  });
 });
 
+// Daily note
+const dailyNoteEl = document.getElementById("daily-note");
+let noteTimer;
+dailyNoteEl.addEventListener("input", () => {
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => {
+    todayData.dailyNote = dailyNoteEl.value;
+    todayData.noteUpdatedBy = settings.userName || null;
+    todayData.noteUpdatedAt = fmt(new Date());
+    syncToday();
+    renderNoteMe();
+  }, 600);
+});
+
+function renderNoteMe() {
+  const meta = document.getElementById("note-meta");
+  if (todayData.noteUpdatedAt) {
+    meta.textContent = `Updated ${todayData.noteUpdatedAt}${todayData.noteUpdatedBy ? " by " + todayData.noteUpdatedBy : ""}`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER TODAY
+// ═══════════════════════════════════════════════════
+function renderToday() {
+  KIDS.forEach(k => renderKid(k.id));
+  // Daily note
+  if (dailyNoteEl.value !== (todayData.dailyNote || "")) dailyNoteEl.value = todayData.dailyNote || "";
+  renderNoteMe();
+  // No-school banner (if ALL kids are no-school)
+  const banner = document.getElementById("no-school-banner");
+  const allNoSchool = KIDS.every(k => todayData.kids[k.id].dayType === "noschool");
+  if (allNoSchool) {
+    banner.textContent = "🚫 No school today for all kids";
+    banner.style.display = "block";
+  } else {
+    banner.style.display = "none";
+  }
+}
+
 function renderKid(id) {
-  const s = state[id];
+  const s = todayData.kids[id];
   const st = STATUSES.find(x => x.key === s.status);
 
-  // Badge & sublabel
+  // Badge + sublabel
   const badge = document.getElementById(`badge-${id}`);
   const sublabel = document.getElementById(`sublabel-${id}`);
   if (st) {
     badge.textContent = `${st.icon} ${st.label}`;
-    badge.style.background = S_BG[s.status];
-    badge.style.color = S_COLOR[s.status];
-    sublabel.textContent = `${st.icon} ${st.label}`;
-    sublabel.style.color = S_COLOR[s.status];
+    badge.style.background = S_BG[s.status]; badge.style.color = S_COLOR[s.status];
+    sublabel.textContent = `${st.icon} ${st.label}`; sublabel.style.color = S_COLOR[s.status];
   } else {
     badge.textContent = "—"; badge.style.background = ""; badge.style.color = "";
     sublabel.textContent = "No status yet"; sublabel.style.color = "";
   }
 
   // Card top tint
-  document.getElementById(`top-${id}`).style.background = s.status ? S_BG[s.status] + "66" : "";
+  document.getElementById(`top-${id}`).style.background = s.status ? S_BG[s.status] + "55" : "";
 
-  // Updated time
-  document.getElementById(`time-${id}`).textContent = s.updatedAt ? `Updated ${s.updatedAt}` : "";
+  // Meta (updated by)
+  const meta = document.getElementById(`meta-${id}`);
+  if (s.updatedAt) {
+    meta.textContent = `Updated ${s.updatedAt}${s.updatedBy ? " by " + s.updatedBy : ""}`;
+  } else { meta.textContent = ""; }
 
-  // Chip states
-  document.querySelectorAll(`.chip[data-kid="${id}"][data-status]`).forEach(b => b.classList.toggle("active", b.dataset.status === s.status));
-  document.querySelectorAll(`.chip[data-kid="${id}"][data-pickup]`).forEach(b => b.classList.toggle("active", b.dataset.pickup === s.pickup));
+  // Status chips
+  document.querySelectorAll(`.chip[data-kid="${id}"][data-status]`).forEach(b =>
+    b.classList.toggle("active", b.dataset.status === s.status));
 
   // Day off note
   const nw = document.getElementById(`note-wrap-${id}`);
@@ -398,13 +778,242 @@ function renderKid(id) {
   nw.classList.toggle("visible", s.status === "off");
   if (ni.value !== (s.dayOffNote || "")) ni.value = s.dayOffNote || "";
 
-  // Time picker sync
+  // Pickup chips
+  document.querySelectorAll(`.chip[data-kid="${id}"][data-pickup]`).forEach(b =>
+    b.classList.toggle("active", b.dataset.pickup === s.pickup));
+
+  // Day type chips
+  document.querySelectorAll(`.chip[data-kid="${id}"][data-daytype]`).forEach(b =>
+    b.classList.toggle("active", b.dataset.daytype === s.dayType));
+
+  // Time picker
   const tp = document.querySelector(`.pickup-time[data-kid="${id}"]`);
-  if (tp && s.pickupTime && tp.value !== s.pickupTime) tp.value = s.pickupTime;
+  if (tp) {
+    const pTime = s.pickupTime || settings.kidPickupTimes[id];
+    if (pTime) {
+      tp.style.display = "";
+      if (tp.value !== pTime) tp.value = pTime;
+      // Highlight if pickup is within 30 min
+      const timeRow = document.getElementById(`time-row-${id}`);
+      const now = new Date();
+      const [ph, pm] = pTime.split(":").map(Number);
+      const pickupMins = ph * 60 + pm;
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+      const diff = pickupMins - nowMins;
+      timeRow.classList.toggle("soon", diff >= 0 && diff <= 30);
+    } else {
+      tp.style.display = "none";
+    }
+  }
 }
 
-function renderAll() { KIDS.forEach(k => renderKid(k.id)); }
-renderAll();
+function applySettingsToCards() {
+  KIDS.forEach(k => {
+    const tp = document.querySelector(`.pickup-time[data-kid="${k.id}"]`);
+    if (tp && !todayData.kids[k.id].pickupTime) {
+      const def = settings.kidPickupTimes[k.id];
+      if (def) { tp.value = def; tp.style.display = ""; }
+      else tp.style.display = "none";
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════════
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+document.getElementById("cal-prev").onclick = () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar();
+};
+document.getElementById("cal-next").onclick = () => {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar();
+};
+
+function renderCalendar() {
+  const label = document.getElementById("cal-month-label");
+  label.textContent = new Date(calYear, calMonth, 1).toLocaleDateString("en-US", { month:"long", year:"numeric" });
+
+  // DOW headers — start Sunday
+  const dowRow = document.getElementById("cal-dow-row");
+  dowRow.innerHTML = DOW_NAMES.map((n,i) =>
+    `<div class="cal-dow ${i===6 ? 'weekend':''}">${n}</div>`).join("");
+
+  const daysEl = document.getElementById("cal-days");
+  daysEl.innerHTML = "";
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const todayD = new Date();
+  const isToday = (y,m,d) => y===todayD.getFullYear() && m===todayD.getMonth() && d===todayD.getDate();
+
+  // Pad start
+  for (let i = 0; i < firstDay; i++) {
+    const prev = new Date(calYear, calMonth, -firstDay+i+1);
+    const el = document.createElement("div");
+    el.className = "cal-day other-month";
+    el.innerHTML = `<span class="cal-day-num">${prev.getDate()}</span>`;
+    daysEl.appendChild(el);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateKey = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const dayData = historyData[dateKey];
+    const dow = new Date(calYear, calMonth, day).getDay();
+    const isSchoolDay = settings.schoolDays.includes(dow);
+
+    const el = document.createElement("div");
+    el.className = "cal-day" +
+      (isToday(calYear, calMonth, day) ? " today" : "") +
+      (!isSchoolDay ? " no-school-day" : "");
+
+    let dotsHtml = "";
+    let labelHtml = "";
+
+    if (dayData?.kids) {
+      const dots = KIDS.map(k => {
+        const ks = dayData.kids[k.id];
+        if (!ks?.status) return "";
+        return `<div class="cal-dot" style="background:${S_COLOR[ks.status]}" title="${k.name}: ${ks.status}"></div>`;
+      }).join("");
+      dotsHtml = `<div class="cal-dots">${dots}</div>`;
+    }
+
+    // Check if any kid had noschool or halfday
+    if (dayData?.kids) {
+      const anyNoSchool = KIDS.some(k => dayData.kids[k.id]?.dayType === "noschool");
+      const anyHalfDay  = KIDS.some(k => dayData.kids[k.id]?.dayType === "halfday");
+      if (anyNoSchool) labelHtml = `<div class="cal-day-label">No School</div>`;
+      else if (anyHalfDay) labelHtml = `<div class="cal-day-label">Half Day</div>`;
+    }
+
+    el.innerHTML = `<span class="cal-day-num">${day}</span>${dotsHtml}${labelHtml}`;
+    el.addEventListener("click", () => showCalDetail(dateKey, day));
+    daysEl.appendChild(el);
+  }
+
+  // Pad end
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const el = document.createElement("div");
+    el.className = "cal-day other-month";
+    el.innerHTML = `<span class="cal-day-num">${i}</span>`;
+    daysEl.appendChild(el);
+  }
+}
+
+function showCalDetail(dateKey, day) {
+  const detail = document.getElementById("cal-detail");
+  const title  = document.getElementById("cal-detail-title");
+  const body   = document.getElementById("cal-detail-body");
+  const data   = historyData[dateKey];
+
+  const dateLabel = new Date(dateKey + "T00:00:00").toLocaleDateString("en-US",
+    { weekday:"long", month:"long", day:"numeric" });
+
+  title.textContent = dateLabel;
+  detail.classList.add("visible");
+
+  if (!data?.kids) {
+    body.innerHTML = `<div style="color:var(--muted);font-size:0.82rem;padding:6px 0">No data recorded for this day.</div>`;
+    return;
+  }
+
+  body.innerHTML = KIDS.map(k => {
+    const ks = data.kids[k.id];
+    if (!ks) return "";
+    const st = STATUSES.find(x => x.key === ks.status);
+    const stBadge = st ? `<span class="mini-badge" style="background:${S_BG[ks.status]};color:${S_COLOR[ks.status]}">${st.icon} ${st.label}</span>` : `<span class="mini-badge" style="background:#f1f5f9;color:var(--muted)">—</span>`;
+    const pickupBadge = ks.pickup ? `<span class="mini-badge" style="background:#f1f5f9;color:var(--muted)">${ks.pickup==="abba"?"👨 Abba":"👩 Ima"}</span>` : "";
+    const dtBadge = ks.dayType ? `<span class="mini-badge" style="background:#fff7ed;color:#c2410c">${ks.dayType==="noschool"?"🚫 No School":"🌤️ Half Day"}</span>` : "";
+    return `<div class="cal-detail-kid">
+      <div class="cal-detail-name">${k.emoji} ${k.name}</div>
+      <div class="cal-detail-badges">${stBadge}${pickupBadge}${dtBadge}</div>
+    </div>`;
+  }).join("");
+
+  if (data.dailyNote) {
+    body.innerHTML += `<div style="margin-top:10px;padding:8px;background:#f8fafc;border-radius:8px;font-size:0.78rem;font-weight:600;color:var(--text)">📝 ${data.dailyNote}</div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+function renderSettings() {
+  // School days picker
+  const picker = document.getElementById("school-days-picker");
+  picker.innerHTML = DOW_NAMES.map((n,i) =>
+    `<div class="dow-chip ${settings.schoolDays.includes(i) ? 'active' : ''}" data-dow="${i}">${n}</div>`
+  ).join("");
+  picker.querySelectorAll(".dow-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const dow = parseInt(chip.dataset.dow);
+      const idx = settings.schoolDays.indexOf(dow);
+      if (idx > -1) settings.schoolDays.splice(idx, 1);
+      else settings.schoolDays.push(dow);
+      settings.schoolDays.sort();
+      renderSettings();
+    });
+  });
+
+  document.getElementById("setting-end-time").value = settings.endTime || "14:00";
+  document.getElementById("setting-halfday-time").value = settings.halfdayTime || "12:00";
+  document.getElementById("setting-user-name").value = settings.userName || "";
+
+  // Kid pickup times
+  const kidSettings = document.getElementById("kid-pickup-settings");
+  kidSettings.innerHTML = KIDS.map(k => `
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">${k.emoji} ${k.name}</div>
+        <div class="settings-sub">Default pickup time</div>
+      </div>
+      <div class="settings-control">
+        <input type="time" id="pickup-setting-${k.id}" value="${settings.kidPickupTimes[k.id] || ''}" />
+      </div>
+    </div>
+  `).join("");
+}
+
+function saveSettings() {
+  settings.endTime     = document.getElementById("setting-end-time").value;
+  settings.halfdayTime = document.getElementById("setting-halfday-time").value;
+  settings.userName    = document.getElementById("setting-user-name").value.trim();
+  KIDS.forEach(k => {
+    const val = document.getElementById(`pickup-setting-${k.id}`).value;
+    settings.kidPickupTimes[k.id] = val || null;
+  });
+  syncSettings();
+  applySettingsToCards();
+  const btn = document.querySelector(".save-btn");
+  btn.textContent = "✅ Saved!";
+  setTimeout(() => btn.textContent = "💾 Save Settings", 1800);
+}
+
+function resetToday() {
+  if (!confirm("Reset all kids' statuses for today?")) return;
+  KIDS.forEach(k => {
+    todayData.kids[k.id] = { status:null, dayOffNote:"", pickup:null, pickupTime:null, dayType:null, updatedAt:null, updatedBy:null };
+  });
+  todayData.dayType = null;
+  syncToday(); renderToday();
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function fmt(date) {
+  return date.toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+}
+
+// Pickup time highlight — refresh every minute
+setInterval(() => KIDS.forEach(k => renderKid(k.id)), 60000);
+
+// Initial render
+renderToday();
 </script>
 </body>
 </html>
