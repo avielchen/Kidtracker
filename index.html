@@ -39,11 +39,15 @@ html,body{height:100%}
 :root{
   --bg:#f0f4f9;--card:#fff;--border:#e2e8f0;--text:#1c2b3a;--muted:#8898aa;
   --radius:14px;--shadow:0 2px 14px rgba(0,0,0,.07);--max-w:640px;--nav-h:52px;
-  --school:#2563eb;--school-bg:#dbeafe;
-  --ready:#d97706; --ready-bg:#fef3c7;
-  --sleep:#7c3aed; --sleep-bg:#ede9fe;
-  --off:#475569;   --off-bg:#e2e8f0;
-  --help:#dc2626;  --help-bg:#fee2e2;
+
+  /* Status colors — meaningful palette */
+  --school:#0ea5e9;    --school-bg:#e0f2fe;   /* sky blue = school */
+  --ready:#f59e0b;     --ready-bg:#fef3c7;    /* amber = getting ready */
+  --sleep:#6366f1;     --sleep-bg:#e0e7ff;    /* indigo = sleeping */
+  --off:#10b981;       --off-bg:#d1fae5;      /* emerald = day off / relaxed */
+  --dad:#dc2626;       --dad-bg:#fee2e2;      /* red = need dad */
+  --mom:#db2777;       --mom-bg:#fce7f3;      /* pink = need mom */
+
   --abba:#1d4ed8;  --abba-bg:#dbeafe;
   --ima:#be185d;   --ima-bg:#fce7f3;
 }
@@ -51,51 +55,21 @@ html,body{height:100%}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 
 /* ── Top nav ── */
-.top-nav{
-  background:var(--card);
-  border-bottom:1.5px solid var(--border);
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-  position:sticky;top:0;z-index:50;
-}
-.top-nav-inner{
-  display:flex;align-items:center;
-  max-width:var(--max-w);margin:0 auto;
-  padding:0 12px;height:var(--nav-h);
-  gap:4px;
-}
+.top-nav{background:var(--card);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);position:sticky;top:0;z-index:50}
+.top-nav-inner{display:flex;align-items:center;max-width:var(--max-w);margin:0 auto;padding:0 12px;height:var(--nav-h);gap:2px}
 .logo{font-size:1rem;font-weight:900;letter-spacing:-.3px;color:var(--text);flex-shrink:0}
 .logo span{color:var(--school)}
 .nav-spacer{flex:1}
-.nav-tab{
-  display:flex;align-items:center;gap:4px;
-  padding:6px 10px;border-radius:8px;
-  font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
-  cursor:pointer;border:none;background:transparent;color:var(--muted);
-  transition:all .15s;white-space:nowrap;
-}
+.nav-tab{display:flex;align-items:center;gap:3px;padding:6px 10px;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .15s;white-space:nowrap}
 .nav-tab:hover{background:#f1f5f9;color:var(--text)}
 .nav-tab.active{background:var(--school-bg);color:var(--school)}
-.nav-tab .ti{font-size:.95rem}
+.nav-tab .ti{font-size:.9rem}
 
 /* ── Date bar ── */
-.date-bar{
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  gap:12px;
-  padding:8px 16px;
-  max-width:var(--max-w);margin:0 auto;
-}
-.date-bar-text{
-  font-weight:800;font-size:.95rem;color:#374151;
-  min-width:160px;text-align:center;
-}
-.date-nav-btn{
-  background:none;border:1.5px solid var(--border);border-radius:8px;
-  width:30px;height:30px;cursor:pointer;font-size:.9rem;
-  display:flex;align-items:center;justify-content:center;
-  transition:background .15s;color:var(--text);flex-shrink:0;
-}
+#date-bar-wrap{background:var(--card);border-bottom:1px solid var(--border)}
+.date-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:7px 16px;max-width:var(--max-w);margin:0 auto}
+.date-bar-text{font-weight:800;font-size:.92rem;color:#374151;min-width:180px;text-align:center}
+.date-nav-btn{background:none;border:1.5px solid var(--border);border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .15s;color:var(--text);flex-shrink:0}
 .date-nav-btn:hover{background:#f1f5f9}
 
 /* ── Pages ── */
@@ -110,9 +84,9 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .kid-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .kid-info{flex:1;min-width:0}
 .kid-name{font-weight:900;font-size:.95rem;line-height:1}
-.kid-sub{font-size:.68rem;font-weight:700;color:var(--muted);margin-top:2px;transition:color .2s}
-.kid-meta{font-size:.6rem;color:#b0bec5;font-weight:600;margin-top:1px}
-.status-badge{font-size:.64rem;font-weight:800;padding:3px 8px;border-radius:20px;background:var(--border);color:var(--muted);white-space:nowrap;flex-shrink:0;transition:all .25s}
+.kid-meta{font-size:.6rem;color:#b0bec5;font-weight:600;margin-top:3px}
+.status-badge{font-size:.9rem;font-weight:900;padding:5px 12px;border-radius:20px;background:var(--border);color:var(--muted);white-space:nowrap;flex-shrink:0;transition:all .25s;letter-spacing:-.2px}
+
 .card-body{display:grid;grid-template-columns:1fr 1fr}
 .card-section{padding:9px 11px 10px}
 .card-section:first-child{border-right:1.5px solid var(--border)}
@@ -123,15 +97,22 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .chip{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.68rem;cursor:pointer;border:1.5px solid transparent;background:#f1f5f9;color:var(--muted);transition:all .12s;white-space:nowrap;user-select:none}
 .chip:hover{filter:brightness(.93);transform:translateY(-1px)}
 .chip:active{transform:scale(.95)}
-.chip[data-status="school"].active{background:var(--school-bg);color:var(--school);border-color:var(--school)}
-.chip[data-status="ready"].active{background:var(--ready-bg);color:var(--ready);border-color:var(--ready)}
-.chip[data-status="sleep"].active{background:var(--sleep-bg);color:var(--sleep);border-color:var(--sleep)}
-.chip[data-status="off"].active{background:var(--off-bg);color:var(--off);border-color:var(--off)}
-.chip[data-status="help"].active{background:var(--help-bg);color:var(--help);border-color:var(--help)}
+
+/* Status chip active colors */
+.chip[data-status="school"].active  {background:var(--school-bg);color:var(--school);border-color:var(--school)}
+.chip[data-status="ready"].active   {background:var(--ready-bg); color:var(--ready); border-color:var(--ready)}
+.chip[data-status="sleep"].active   {background:var(--sleep-bg); color:var(--sleep); border-color:var(--sleep)}
+.chip[data-status="off"].active     {background:var(--off-bg);   color:var(--off);   border-color:var(--off)}
+.chip[data-status="dad"].active     {background:var(--dad-bg);   color:var(--dad);   border-color:var(--dad)}
+.chip[data-status="mom"].active     {background:var(--mom-bg);   color:var(--mom);   border-color:var(--mom)}
+
+/* Pickup chip active */
 .chip[data-pickup="abba"].active{background:var(--abba-bg);color:var(--abba);border-color:var(--abba)}
-.chip[data-pickup="ima"].active{background:var(--ima-bg);color:var(--ima);border-color:var(--ima)}
+.chip[data-pickup="ima"].active {background:var(--ima-bg); color:var(--ima); border-color:var(--ima)}
+
+/* Day type chip */
 .chip[data-daytype="noschool"].active{background:#fff7ed;color:#c2410c;border-color:#fb923c}
-.chip[data-daytype="halfday"].active{background:#f0fdf4;color:#15803d;border-color:#4ade80}
+.chip[data-daytype="halfday"].active {background:#f0fdf4;color:#15803d;border-color:#4ade80}
 
 .day-off-note{display:none;margin-top:6px}
 .day-off-note.visible{display:block}
@@ -170,14 +151,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .cal-day.noschoolday{background:#fff7ed}
 .cdn{font-size:.7rem;font-weight:800;color:var(--text);display:block;text-align:center;margin-bottom:3px}
 .cal-capsules{display:flex;flex-direction:column;gap:2px;padding:0 2px}
-.cal-capsule{
-  display:flex;align-items:center;justify-content:space-between;
-  border-radius:20px;padding:2px 5px;
-  font-size:.55rem;font-weight:800;
-}
-.cal-capsule-left{display:flex;align-items:center;gap:2px}
-.cal-capsule-avatar{width:14px;height:14px;border-radius:50%;object-fit:cover;font-size:.6rem;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
-.cal-capsule-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.cal-capsule{display:flex;align-items:center;gap:3px;border-radius:20px;padding:2px 5px;font-size:.55rem;font-weight:800}
+.cal-cap-avatar{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.5)}
+.cal-cap-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.cal-cap-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:34px}
 .cal-day-tag{font-size:.48rem;font-weight:800;text-align:center;color:#c2410c;margin-top:1px}
 
 /* Cal detail */
@@ -186,9 +163,9 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .cal-detail-title{font-weight:900;font-size:.95rem;margin-bottom:10px}
 .cal-detail-kid{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
 .cal-detail-kid:last-child{border-bottom:none}
-.cal-detail-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0f4f8;font-size:1rem}
-.cal-detail-avatar img{width:100%;height:100%;object-fit:cover}
-.cal-dn{font-weight:800;font-size:.82rem;width:68px;flex-shrink:0}
+.cal-det-av{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0f4f8;font-size:1rem}
+.cal-det-av img{width:100%;height:100%;object-fit:cover}
+.cal-dn{font-weight:800;font-size:.82rem;width:72px;flex-shrink:0}
 .cal-badges{display:flex;flex-wrap:wrap;gap:4px}
 .mbadge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px}
 
@@ -201,7 +178,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)}
 .modal-title{font-size:1.05rem;font-weight:900;margin-bottom:14px}
 .ssection{background:#f8fafc;border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
-.ssection-title{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:9px 12px 7px;border-bottom:1.5px solid var(--border);background:#f0f4f8}
+.ssection-title{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:9px 12px 7px;border-bottom:1.5px solid var(--border);background:#f0f4f8;display:flex;align-items:center;justify-content:space-between}
 .srow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);gap:10px}
 .srow:last-child{border-bottom:none}
 .slbl{font-size:.82rem;font-weight:700}
@@ -211,69 +188,64 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .sctl input[type=time]:focus{border-color:#60a5fa}
 .sctl input[type=text]{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:var(--text);outline:none;background:var(--card);width:110px}
 .sctl input[type=text]:focus{border-color:#60a5fa}
+.sctl input.wide{width:140px}
+
 .dow-picker{display:flex;gap:4px;flex-wrap:wrap}
 .dow-chip{padding:4px 8px;border-radius:20px;font-size:.68rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);user-select:none;transition:all .12s}
 .dow-chip.active{background:var(--school-bg);color:var(--school);border-color:var(--school)}
 
+.status-toggle-group{display:flex;flex-wrap:wrap;gap:4px}
+.status-toggle{padding:4px 9px;border-radius:20px;font-size:.68rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);user-select:none;transition:all .12s}
+.status-toggle.on{background:var(--school-bg);color:var(--school);border-color:var(--school)}
+
+.hide-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.toggle-track{width:36px;height:20px;border-radius:20px;background:#e2e8f0;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-track.on{background:var(--school)}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .2s}
+.toggle-track.on .toggle-thumb{left:18px}
+
 /* Icon picker */
-.icon-picker{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
-.icon-opt{
-  width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.4rem;cursor:pointer;
-  border:2px solid transparent;
-  background:#f0f4f8;transition:all .12s;
-  overflow:hidden;
-}
+.icon-picker{display:flex;flex-wrap:wrap;gap:5px}
+.icon-opt{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:2px solid transparent;background:#f0f4f8;transition:all .12s;overflow:hidden}
 .icon-opt:hover{border-color:var(--school);transform:scale(1.08)}
 .icon-opt.selected{border-color:var(--school);box-shadow:0 0 0 3px var(--school-bg)}
 .icon-opt img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.upload-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:6px 12px;border-radius:8px;
-  border:1.5px dashed var(--border);
-  background:var(--card);color:var(--muted);
-  font-family:'Nunito',sans-serif;font-weight:700;font-size:.75rem;
-  cursor:pointer;transition:all .15s;margin-top:6px;
-}
+.upload-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1.5px dashed var(--border);background:var(--card);color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .15s;margin-top:6px}
 .upload-btn:hover{border-color:var(--school);color:var(--school)}
 
 .save-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--school);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;margin-top:12px;transition:background .15s}
-.save-btn:hover{background:#1d4ed8}
+.save-btn:hover{background:#0284c7}
 .reset-btn{width:100%;padding:10px;border:1.5px solid #fca5a5;border-radius:10px;background:#fff5f5;color:#dc2626;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;margin-top:8px}
-.reset-btn:hover{background:#fee2e2}
 .notif-btn{padding:5px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer}
+.add-kid-btn{width:100%;padding:10px;border:1.5px dashed var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;margin-top:4px;transition:all .15s}
+.add-kid-btn:hover{border-color:var(--school);color:var(--school);background:var(--school-bg)}
+.remove-kid-btn{font-size:.7rem;font-weight:700;color:#dc2626;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:6px;padding:2px 8px;cursor:pointer;font-family:'Nunito',sans-serif}
+.remove-kid-btn:hover{background:#fee2e2}
 </style>
 </head>
 <body>
 
-<!-- ══ TOP NAV ══ -->
+<!-- TOP NAV -->
 <div class="top-nav">
   <div class="top-nav-inner">
     <div class="logo">🧒 <span>Kid</span>Tracker</div>
     <div class="nav-spacer"></div>
-    <button class="nav-tab active" id="nav-today" onclick="showPage('today')">
-      <span class="ti">🏠</span> Today
-    </button>
-    <button class="nav-tab" id="nav-calendar" onclick="showPage('calendar')">
-      <span class="ti">📅</span> Calendar
-    </button>
-    <button class="nav-tab" id="nav-settings-btn" onclick="openSettings()">
-      <span class="ti">⚙️</span> Settings
-    </button>
+    <button class="nav-tab active" id="nav-today" onclick="showPage('today')"><span class="ti">🏠</span> Today</button>
+    <button class="nav-tab" id="nav-calendar" onclick="showPage('calendar')"><span class="ti">📅</span> Calendar</button>
+    <button class="nav-tab" id="nav-settings-btn" onclick="openSettings()"><span class="ti">⚙️</span> Settings</button>
   </div>
 </div>
 
-<!-- ══ DATE BAR (Today page only) ══ -->
-<div id="date-bar-wrap" style="background:var(--card);border-bottom:1px solid var(--border)">
-  <div class="date-bar" style="max-width:var(--max-w);margin:0 auto">
+<!-- DATE BAR -->
+<div id="date-bar-wrap">
+  <div class="date-bar">
     <button class="date-nav-btn" onclick="changeDay(-1)">‹</button>
     <div class="date-bar-text" id="date-bar-text"></div>
     <button class="date-nav-btn" onclick="changeDay(1)">›</button>
   </div>
 </div>
 
-<!-- ══ TODAY ══ -->
+<!-- TODAY PAGE -->
 <div class="page active" id="page-today">
   <div id="no-school-banner" style="display:none;background:#fff7ed;border:1.5px solid #fb923c;border-radius:10px;padding:8px 12px;font-size:.8rem;font-weight:700;color:#9a3412;margin-bottom:10px;text-align:center"></div>
   <div class="cards" id="cards"></div>
@@ -284,7 +256,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
   </div>
 </div>
 
-<!-- ══ CALENDAR ══ -->
+<!-- CALENDAR PAGE -->
 <div class="page" id="page-calendar">
   <div class="cal-nav">
     <button class="cal-nav-btn" id="cal-prev">‹ Prev</button>
@@ -301,30 +273,33 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
   </div>
 </div>
 
-<!-- ══ SETTINGS MODAL ══ -->
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal" onclick="handleModalBg(event)">
   <div class="modal" id="modal-inner">
     <div class="modal-handle"></div>
     <button class="modal-close" onclick="closeSettings()">✕</button>
     <div class="modal-title">⚙️ Settings</div>
 
-    <!-- Who are you -->
+    <!-- Identity -->
     <div class="ssection">
-      <div class="ssection-title">Your Identity (saved on this device only)</div>
+      <div class="ssection-title">Your Identity <span style="font-size:.6rem;color:#94a3b8;text-transform:none;letter-spacing:0">(saved on this device only)</span></div>
       <div class="srow">
         <div><div class="slbl">Your name</div><div class="ssub">Shows on updates — unique per device</div></div>
         <div class="sctl"><input type="text" id="s-username" placeholder="Abba or Ima"/></div>
       </div>
     </div>
 
-    <!-- Per-kid sections -->
+    <!-- Per-kid sections built dynamically -->
     <div id="per-kid-sections"></div>
 
+    <!-- Add child -->
+    <button class="add-kid-btn" onclick="addNewKid()">➕ Add a child</button>
+
     <!-- Notifications -->
-    <div class="ssection">
+    <div class="ssection" style="margin-top:12px">
       <div class="ssection-title">Notifications</div>
       <div class="srow">
-        <div><div class="slbl">Pickup Reminders</div><div class="ssub">Alert 15 min before pickup time</div></div>
+        <div><div class="slbl">Pickup Reminders</div><div class="ssub">Alert 15 min before pickup</div></div>
         <div class="sctl"><button class="notif-btn" id="notif-btn" onclick="requestNotifications()">Enable</button></div>
       </div>
     </div>
@@ -335,146 +310,132 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 </div>
 
 <script>
-// ═══════════════════════════
-// CONSTANTS
-// ═══════════════════════════
-const KIDS_DEFAULT = [
-  {id:"shlomo",   name:"Shlomo",   icon:"👦"},
-  {id:"zecharya", name:"Zecharya", icon:"🧒"},
-  {id:"rivka",    name:"Rivka",    icon:"👧"},
+// ═══════════════════════
+// ALL STATUS DEFINITIONS
+// ═══════════════════════
+const ALL_STATUSES = [
+  {key:"school", icon:"🏫", label:"In School",       color:"#0ea5e9", bg:"#e0f2fe"},
+  {key:"ready",  icon:"🎒", label:"Getting Ready",    color:"#f59e0b", bg:"#fef3c7"},
+  {key:"sleep",  icon:"😴", label:"Sleeping",         color:"#6366f1", bg:"#e0e7ff"},
+  {key:"off",    icon:"🌴", label:"Day Off",           color:"#10b981", bg:"#d1fae5"},
+  {key:"dad",    icon:"🆘", label:"Need Dad's Help",  color:"#dc2626", bg:"#fee2e2"},
+  {key:"mom",    icon:"💗", label:"Need Mom's Help",  color:"#db2777", bg:"#fce7f3"},
 ];
-const ICON_OPTIONS = ["👦","👧","🧒","🧒‍♂️","🧒‍♀️","🙋‍♂️","🙋‍♀️","🧑","👶","🌟","⭐","🦁","🐻","🐼","🐨","🦊","🐯","🐸","🦋","🌈","🚀","⚽","🎨","🎵"];
-const STATUSES = [
-  {key:"school", icon:"🏫", label:"In School"},
-  {key:"ready",  icon:"🎒", label:"Getting Ready"},
-  {key:"sleep",  icon:"😴", label:"Sleeping"},
-  {key:"off",    icon:"🏖️",  label:"Day Off"},
-  {key:"help",   icon:"🆘", label:"Need Abba's Help"},
-];
-const SC={school:"#2563eb",ready:"#d97706",sleep:"#7c3aed",off:"#475569",help:"#dc2626"};
-const SB={school:"#dbeafe",ready:"#fef3c7",sleep:"#ede9fe",off:"#e2e8f0",help:"#fee2e2"};
-const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const SMAP = Object.fromEntries(ALL_STATUSES.map(s=>[s.key,s]));
 
-// ═══════════════════════════
-// STATE
-// ═══════════════════════════
-// Local (per device)
-let localSettings = JSON.parse(localStorage.getItem("kt_local")||"{}");
-// userName is local only
-let userName = localSettings.userName || "";
+const ICON_OPTIONS = ["👦","👧","🧒","🧒‍♂️","🧒‍♀️","🙋‍♂️","🙋‍♀️","👶","🌟","⭐","🦁","🐻","🐼","🦊","🐯","🐸","🦋","🌈","🚀","⚽","🎨","🎵","🦄","🌻"];
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-// Shared via Firebase
+// ═══════════════════════
+// SHARED SETTINGS (Firebase)
+// ═══════════════════════
 let settings = {
-  kids: KIDS_DEFAULT.map(k=>({...k, schoolDays:[0,1,2,3,4,5], endTime:"14:00", halfdayTime:"12:00", pickupTime: k.id==="shlomo"?"15:30":k.id==="zecharya"?"16:45":null})),
+  kids: [
+    {id:"shlomo",   name:"Shlomo",   icon:"👦", schoolDays:[0,1,2,3,4,5], endTime:"14:00", halfdayTime:"12:00", pickupTime:"15:30", enabledStatuses:["school","ready","sleep","off","dad","mom"], hidden:false},
+    {id:"zecharya", name:"Zecharya", icon:"🧒", schoolDays:[0,1,2,3,4,5], endTime:"14:00", halfdayTime:"12:00", pickupTime:"16:45", enabledStatuses:["school","ready","sleep","off","dad","mom"], hidden:false},
+    {id:"rivka",    name:"Rivka",    icon:"👧", schoolDays:[0,1,2,3,4,5], endTime:"14:00", halfdayTime:"12:00", pickupTime:null,    enabledStatuses:["school","ready","sleep","off","dad","mom"], hidden:false},
+  ]
 };
 
-let viewDateOffset = 0; // 0=today, -1=yesterday, etc
-function getViewKey(offset) {
-  const d = new Date();
-  d.setDate(d.getDate() + (offset||0));
-  return d.toISOString().split("T")[0];
-}
+// ═══════════════════════
+// LOCAL (per device)
+// ═══════════════════════
+let localData = JSON.parse(localStorage.getItem("kt_local")||"{}");
+let userName  = localData.userName || "";
+let localIcons = JSON.parse(localStorage.getItem("kt_icons")||"{}");
 
-let dayCache = {}; // dateKey -> data
+// Restore local icons into settings
+function applyLocalIcons(){ settings.kids.forEach(k=>{ if(localIcons[k.id]) k.iconImg=localIcons[k.id]; }); }
+
+// ═══════════════════════
+// DAY STATE
+// ═══════════════════════
+let viewDateOffset = 0;
+let dayCache = {};
 let historyData = {};
 
-// ═══════════════════════════
-// DATE BAR
-// ═══════════════════════════
-function updateDateBar() {
-  const d = new Date();
-  d.setDate(d.getDate() + viewDateOffset);
-  const isToday = viewDateOffset === 0;
-  const isYesterday = viewDateOffset === -1;
-  const isTomorrow = viewDateOffset === 1;
-  let label = d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
-  if(isToday) label = "Today — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-  if(isYesterday) label = "Yesterday — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-  if(isTomorrow) label = "Tomorrow — " + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-  document.getElementById("date-bar-text").textContent = label;
-}
-
-function changeDay(delta) {
-  viewDateOffset += delta;
-  updateDateBar();
-  loadDayData(getViewKey(viewDateOffset));
-}
-updateDateBar();
-
-// ═══════════════════════════
-// FIREBASE
-// ═══════════════════════════
-const DB_HIST = "kidtracker/days";
-const DB_SET  = "kidtracker/settings";
-const DB_META = "kidtracker/meta";
-
-function dbDay(dateKey){ return `kidtracker/days/${dateKey}`; }
-
-function syncDay(dateKey, data) {
-  if(window._fbSet) window._fbSet(dbDay(dateKey), data);
-}
-function syncSettings() {
-  if(window._fbSet) window._fbSet(DB_SET, settings);
-}
-
-function emptyDayData() {
+function getViewKey(off){ const d=new Date(); d.setDate(d.getDate()+(off||0)); return d.toISOString().split("T")[0]; }
+function emptyDayData(){
   const kids={};
-  KIDS_DEFAULT.forEach(k=>{kids[k.id]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null};});
+  settings.kids.forEach(k=>{ kids[k.id]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null}; });
   return {dailyNote:"",noteUpdatedBy:null,noteUpdatedAt:null,kids};
 }
+function getCurrentDayData(){ const k=getViewKey(viewDateOffset); return JSON.parse(JSON.stringify(dayCache[k]||emptyDayData())); }
+function saveDayData(data){ const k=getViewKey(viewDateOffset); dayCache[k]=data; if(window._fbSet) window._fbSet(`kidtracker/days/${k}`,data); }
+function stampKid(data,id){ data.kids[id].updatedAt=fmt(new Date()); data.kids[id].updatedBy=userName||null; }
 
-function loadDayData(dateKey) {
-  if(dayCache[dateKey]) { renderToday(dayCache[dateKey]); return; }
-  // Will be loaded via onValue listener
-  renderToday(emptyDayData());
-}
-
-document.addEventListener("firebase-ready", () => {
-  // Listen all days
-  window._fbOn(DB_HIST, data => {
-    historyData = data||{};
-    // Update cache
+// ═══════════════════════
+// FIREBASE
+// ═══════════════════════
+document.addEventListener("firebase-ready",()=>{
+  window._fbOn("kidtracker/days", data=>{
+    historyData=data||{};
     Object.keys(historyData).forEach(k=>{ dayCache[k]=historyData[k]; });
-    renderToday(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
+    // Ensure today's kids object has all current kids
+    const todayKey=getViewKey(viewDateOffset);
+    if(dayCache[todayKey]){
+      settings.kids.forEach(k=>{if(!dayCache[todayKey].kids) dayCache[todayKey].kids={}; if(!dayCache[todayKey].kids[k.id]) dayCache[todayKey].kids[k.id]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null};});
+    }
+    renderToday();
   });
-
-  window._fbOn(DB_SET, data => {
-    if(data && data.kids) {
-      // Merge per-kid settings
-      settings.kids = KIDS_DEFAULT.map(kd=>{
-        const saved = data.kids.find?.(x=>x.id===kd.id) || (Array.isArray(data.kids)?null:data.kids[kd.id]);
-        return saved ? {...kd,...saved} : kd;
-      });
-      if(!Array.isArray(settings.kids)) {
-        settings.kids = KIDS_DEFAULT.map(kd=>({...kd,...(data.kids[kd.id]||{})}));
-      }
+  window._fbOn("kidtracker/settings", data=>{
+    if(data?.kids){
+      // Merge saved settings into current
+      const saved=Array.isArray(data.kids)?data.kids:Object.values(data.kids);
+      settings.kids = saved.map(sk=>({
+        id: sk.id, name: sk.name||sk.id,
+        icon: sk.icon||"🧒",
+        schoolDays: sk.schoolDays||[0,1,2,3,4,5],
+        endTime: sk.endTime||"14:00",
+        halfdayTime: sk.halfdayTime||"12:00",
+        pickupTime: sk.pickupTime||null,
+        enabledStatuses: sk.enabledStatuses||ALL_STATUSES.map(s=>s.key),
+        hidden: sk.hidden||false,
+      }));
+      applyLocalIcons();
+      rebuildCards();
+      renderToday();
     }
   });
-
-  // Auto-reset
-  window._fbOn(DB_META, data => {
-    const today = new Date().toISOString().split("T")[0];
-    if(data?.lastReset !== today && new Date().getHours() >= 5) {
-      window._fbSet(DB_META, {lastReset: today});
+  window._fbOn("kidtracker/meta", data=>{
+    const today=new Date().toISOString().split("T")[0];
+    if(data?.lastReset!==today && new Date().getHours()>=5){
+      window._fbSet("kidtracker/meta",{lastReset:today});
     }
   });
-
-  document.getElementById("live-pip") && document.getElementById("live-pip").classList.add("on");
 });
 
-// ═══════════════════════════
-// BUILD TODAY CARDS
-// ═══════════════════════════
-const container = document.getElementById("cards");
-KIDS_DEFAULT.forEach(kid => {
-  const card = document.createElement("div");
+// ═══════════════════════
+// DATE BAR
+// ═══════════════════════
+function updateDateBar(){
+  const d=new Date(); d.setDate(d.getDate()+viewDateOffset);
+  let label=d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+  if(viewDateOffset===0) label="Today — "+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  else if(viewDateOffset===-1) label="Yesterday — "+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  else if(viewDateOffset===1) label="Tomorrow — "+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  document.getElementById("date-bar-text").textContent=label;
+}
+function changeDay(delta){ viewDateOffset+=delta; updateDateBar(); renderToday(); }
+
+// ═══════════════════════
+// BUILD / REBUILD CARDS
+// ═══════════════════════
+function rebuildCards(){
+  const container=document.getElementById("cards");
+  container.innerHTML="";
+  settings.kids.forEach(kid=>{ if(!kid.hidden) buildCard(kid); });
+}
+
+function buildCard(kid){
+  const container=document.getElementById("cards");
+  const card=document.createElement("div");
   card.className="kid-card"; card.id=`card-${kid.id}`;
   card.innerHTML=`
     <div class="card-top" id="top-${kid.id}">
       <div class="kid-avatar" id="avatar-${kid.id}">${kid.icon}</div>
       <div class="kid-info">
-        <div class="kid-name">${kid.name}</div>
-        <div class="kid-sub" id="sub-${kid.id}">No status yet</div>
+        <div class="kid-name" id="kname-${kid.id}">${kid.name}</div>
         <div class="kid-meta" id="meta-${kid.id}"></div>
       </div>
       <div class="status-badge" id="badge-${kid.id}">—</div>
@@ -482,9 +443,7 @@ KIDS_DEFAULT.forEach(kid => {
     <div class="card-body">
       <div class="card-section">
         <div class="slabel">Status</div>
-        <div class="chips">
-          ${STATUSES.map(s=>`<button class="chip" data-kid="${kid.id}" data-status="${s.key}">${s.icon} ${s.label}</button>`).join("")}
-        </div>
+        <div class="chips" id="status-chips-${kid.id}"></div>
         <div class="day-off-note" id="don-${kid.id}">
           <input type="text" id="don-inp-${kid.id}" placeholder="Reason (holiday, sick…)"/>
         </div>
@@ -501,47 +460,151 @@ KIDS_DEFAULT.forEach(kid => {
         </div>
         <div class="time-row" id="tr-${kid.id}">
           <span>🕐</span>
-          <input type="time" class="pickup-time" data-kid="${kid.id}"/>
+          <input type="time" class="pickup-time" data-kid="${kid.id}" value="${kid.pickupTime||''}"/>
         </div>
       </div>
     </div>`;
   container.appendChild(card);
+  rebuildStatusChips(kid);
+  attachCardListeners(kid.id);
+}
 
-  card.querySelectorAll(".chip[data-status]").forEach(b=>b.addEventListener("click",()=>{
+function rebuildStatusChips(kid){
+  const chips=document.getElementById(`status-chips-${kid.id}`);
+  if(!chips) return;
+  const enabled=kid.enabledStatuses||ALL_STATUSES.map(s=>s.key);
+  chips.innerHTML=ALL_STATUSES
+    .filter(s=>enabled.includes(s.key))
+    .map(s=>`<button class="chip" data-kid="${kid.id}" data-status="${s.key}">${s.icon} ${s.label}</button>`)
+    .join("");
+  // Re-attach status chip listeners
+  chips.querySelectorAll(".chip[data-status]").forEach(b=>b.addEventListener("click",()=>{
     const data=getCurrentDayData();
+    if(!data.kids[b.dataset.kid]) data.kids[b.dataset.kid]={status:null,dayOffNote:"",pickup:null,pickupTime:null,dayType:null,updatedAt:null,updatedBy:null};
     data.kids[b.dataset.kid].status = data.kids[b.dataset.kid].status===b.dataset.status?null:b.dataset.status;
     if(data.kids[b.dataset.kid].status!=="off") data.kids[b.dataset.kid].dayOffNote="";
-    stampKid(data, b.dataset.kid);
-    saveDayData(data); renderToday(data);
+    stampKid(data,b.dataset.kid);
+    saveDayData(data); renderToday();
   }));
+}
 
-  document.getElementById(`don-inp-${kid.id}`).addEventListener("input",e=>{
+function attachCardListeners(kidId){
+  const card=document.getElementById(`card-${kidId}`);
+  if(!card) return;
+
+  document.getElementById(`don-inp-${kidId}`)?.addEventListener("input",e=>{
     const data=getCurrentDayData();
-    data.kids[kid.id].dayOffNote=e.target.value;
-    saveDayData(data);
+    if(!data.kids[kidId]) return;
+    data.kids[kidId].dayOffNote=e.target.value; saveDayData(data);
   });
 
   card.querySelectorAll(".chip[data-pickup]").forEach(b=>b.addEventListener("click",()=>{
     const data=getCurrentDayData();
+    if(!data.kids[b.dataset.kid]) return;
     data.kids[b.dataset.kid].pickup = data.kids[b.dataset.kid].pickup===b.dataset.pickup?null:b.dataset.pickup;
-    stampKid(data, b.dataset.kid);
-    saveDayData(data); renderToday(data);
+    stampKid(data,b.dataset.kid);
+    saveDayData(data); renderToday();
   }));
 
   card.querySelectorAll(".chip[data-daytype]").forEach(b=>b.addEventListener("click",()=>{
     const data=getCurrentDayData();
-    data.kids[b.dataset.kid].dayType = data.kids[b.dataset.kid].dayType===b.dataset.daytype?null:b.dataset.daytype;
-    stampKid(data, b.dataset.kid);
-    saveDayData(data); renderToday(data);
+    if(!data.kids[b.dataset.kid]) return;
+    const kid=settings.kids.find(k=>k.id===b.dataset.kid);
+    const prevType=data.kids[b.dataset.kid].dayType;
+    const newType=prevType===b.dataset.daytype?null:b.dataset.daytype;
+    data.kids[b.dataset.kid].dayType=newType;
+    // Update pickup time based on day type
+    if(newType==="halfday" && kid?.halfdayTime){
+      data.kids[b.dataset.kid].pickupTime=kid.halfdayTime;
+    } else if(newType==="noschool"){
+      data.kids[b.dataset.kid].pickupTime=null;
+    } else if(!newType){
+      data.kids[b.dataset.kid].pickupTime=kid?.pickupTime||null;
+    }
+    stampKid(data,b.dataset.kid);
+    saveDayData(data); renderToday();
   }));
 
   const tp=card.querySelector(".pickup-time");
   if(tp) tp.addEventListener("change",()=>{
     const data=getCurrentDayData();
-    data.kids[kid.id].pickupTime=tp.value;
-    saveDayData(data); schedulePickupReminders(data);
+    if(!data.kids[kidId]) return;
+    data.kids[kidId].pickupTime=tp.value; saveDayData(data); schedulePickupReminders(data);
   });
-});
+}
+
+// ═══════════════════════
+// RENDER TODAY
+// ═══════════════════════
+function renderToday(){
+  const data=dayCache[getViewKey(viewDateOffset)]||emptyDayData();
+  settings.kids.forEach(kid=>{ if(!kid.hidden) renderKid(kid,data); });
+  const dn=document.getElementById("daily-note");
+  if(dn.value!==(data.dailyNote||"")) dn.value=data.dailyNote||"";
+  renderNoteMeta(data);
+  const allNS=settings.kids.filter(k=>!k.hidden).every(k=>data.kids?.[k.id]?.dayType==="noschool");
+  const banner=document.getElementById("no-school-banner");
+  banner.style.display=allNS?"block":"none";
+  if(allNS) banner.textContent="🚫 No school today for all kids";
+}
+
+function renderKid(kid, data){
+  const card=document.getElementById(`card-${kid.id}`);
+  if(!card) return;
+  const s=data.kids?.[kid.id]||{};
+  const st=s.status?SMAP[s.status]:null;
+
+  // Badge — bigger, no sub-label
+  const badge=document.getElementById(`badge-${kid.id}`);
+  if(st){
+    badge.textContent=`${st.icon} ${st.label}`;
+    badge.style.background=st.bg; badge.style.color=st.color;
+  } else {
+    badge.textContent="—"; badge.style.background=""; badge.style.color="";
+  }
+  document.getElementById(`top-${kid.id}`).style.background=st?st.bg+"55":"";
+  document.getElementById(`meta-${kid.id}`).textContent=
+    s.updatedAt?`Updated ${s.updatedAt}${s.updatedBy?" by "+s.updatedBy:""}`:"";
+  document.getElementById(`kname-${kid.id}`).textContent=kid.name;
+
+  // Avatar
+  const av=document.getElementById(`avatar-${kid.id}`);
+  if(av){ if(kid.iconImg) av.innerHTML=`<img src="${kid.iconImg}"/>`; else av.innerHTML=kid.icon||"🧒"; }
+
+  // Status chips
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-status]`).forEach(b=>{
+    b.classList.remove("active");
+    if(b.dataset.status===s.status) b.classList.add("active");
+    const stDef=SMAP[b.dataset.status];
+    if(b.classList.contains("active")&&stDef){
+      b.style.background=stDef.bg; b.style.color=stDef.color; b.style.borderColor=stDef.color;
+    } else { b.style.background=""; b.style.color=""; b.style.borderColor=""; }
+  });
+
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-pickup]`).forEach(b=>b.classList.toggle("active",b.dataset.pickup===s.pickup));
+  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-daytype]`).forEach(b=>b.classList.toggle("active",b.dataset.daytype===s.dayType));
+
+  document.getElementById(`don-${kid.id}`)?.classList.toggle("visible",s.status==="off");
+  const donInp=document.getElementById(`don-inp-${kid.id}`);
+  if(donInp&&donInp.value!==(s.dayOffNote||"")) donInp.value=s.dayOffNote||"";
+
+  // Pickup time
+  const tp=card.querySelector(".pickup-time");
+  const tr=document.getElementById(`tr-${kid.id}`);
+  const pt=s.pickupTime||(s.dayType==="noschool"?null:(s.dayType==="halfday"?kid.halfdayTime:kid.pickupTime))||null;
+  if(tp){
+    if(pt){ tp.style.display=""; if(tp.value!==pt) tp.value=pt;
+      const[ph,pm]=pt.split(":").map(Number);
+      const diff=(ph*60+pm)-(new Date().getHours()*60+new Date().getMinutes());
+      tr?.classList.toggle("soon",diff>=0&&diff<=30);
+    } else { tp.value=""; tp.style.display="none"; tr?.classList.remove("soon"); }
+  }
+}
+
+function renderNoteMeta(data){
+  const m=document.getElementById("note-meta");
+  m.textContent=data?.noteUpdatedAt?`Updated ${data.noteUpdatedAt}${data.noteUpdatedBy?" by "+data.noteUpdatedBy:""}`:"";
+}
 
 // Daily note
 let noteTimer;
@@ -556,102 +619,16 @@ document.getElementById("daily-note").addEventListener("input",()=>{
   },600);
 });
 
-function getCurrentDayData() {
-  const key=getViewKey(viewDateOffset);
-  return JSON.parse(JSON.stringify(dayCache[key]||emptyDayData()));
-}
-function saveDayData(data) {
-  const key=getViewKey(viewDateOffset);
-  dayCache[key]=data;
-  syncDay(key, data);
-}
-function stampKid(data, id) {
-  data.kids[id].updatedAt=fmt(new Date());
-  data.kids[id].updatedBy=userName||null;
-}
-
-// ═══════════════════════════
-// RENDER TODAY
-// ═══════════════════════════
-function renderToday(data) {
-  if(!data) data=emptyDayData();
-  KIDS_DEFAULT.forEach(k=>renderKid(k, data));
-
-  const dn=document.getElementById("daily-note");
-  if(dn.value!==(data.dailyNote||"")) dn.value=data.dailyNote||"";
-  renderNoteMeta(data);
-
-  const banner=document.getElementById("no-school-banner");
-  const allNS=KIDS_DEFAULT.every(k=>data.kids[k.id]?.dayType==="noschool");
-  banner.style.display=allNS?"block":"none";
-  if(allNS) banner.textContent="🚫 No school today for all kids";
-}
-
-function renderKid(kid, data) {
-  const s=data.kids[kid.id]||{};
-  const st=STATUSES.find(x=>x.key===s.status);
-  const kidSetting=settings.kids.find(k=>k.id===kid.id)||kid;
-
-  const badge=document.getElementById(`badge-${kid.id}`);
-  const sub=document.getElementById(`sub-${kid.id}`);
-  if(st){
-    badge.textContent=`${st.icon} ${st.label}`; badge.style.background=SB[s.status]; badge.style.color=SC[s.status];
-    sub.textContent=`${st.icon} ${st.label}`; sub.style.color=SC[s.status];
-  } else {
-    badge.textContent="—"; badge.style.background=""; badge.style.color="";
-    sub.textContent="No status yet"; sub.style.color="";
-  }
-  document.getElementById(`top-${kid.id}`).style.background=s.status?SB[s.status]+"55":"";
-  document.getElementById(`meta-${kid.id}`).textContent=
-    s.updatedAt?`Updated ${s.updatedAt}${s.updatedBy?" by "+s.updatedBy:""}`:"";
-
-  // Avatar
-  renderAvatarEl(document.getElementById(`avatar-${kid.id}`), kidSetting);
-
-  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-status]`).forEach(b=>b.classList.toggle("active",b.dataset.status===s.status));
-  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-pickup]`).forEach(b=>b.classList.toggle("active",b.dataset.pickup===s.pickup));
-  document.querySelectorAll(`.chip[data-kid="${kid.id}"][data-daytype]`).forEach(b=>b.classList.toggle("active",b.dataset.daytype===s.dayType));
-
-  document.getElementById(`don-${kid.id}`).classList.toggle("visible",s.status==="off");
-  const donInp=document.getElementById(`don-inp-${kid.id}`);
-  if(donInp.value!==(s.dayOffNote||"")) donInp.value=s.dayOffNote||"";
-
-  const tp=document.querySelector(`.pickup-time[data-kid="${kid.id}"]`);
-  const tr=document.getElementById(`tr-${kid.id}`);
-  const pt=s.pickupTime||kidSetting.pickupTime||null;
-  if(pt){ tp.style.display=""; if(tp.value!==pt) tp.value=pt;
-    const[ph,pm]=pt.split(":").map(Number);
-    const diff=(ph*60+pm)-(new Date().getHours()*60+new Date().getMinutes());
-    tr.classList.toggle("soon",diff>=0&&diff<=30);
-  } else { tp.style.display="none"; tr.classList.remove("soon"); }
-}
-
-function renderAvatarEl(el, kidSetting) {
-  if(!el) return;
-  if(kidSetting.iconImg) {
-    el.innerHTML=`<img src="${kidSetting.iconImg}" alt="${kidSetting.name}"/>`;
-  } else {
-    el.innerHTML=kidSetting.icon||kidSetting.emoji||"🧒";
-  }
-}
-
-function renderNoteMeta(data) {
-  const m=document.getElementById("note-meta");
-  m.textContent=data?.noteUpdatedAt?`Updated ${data.noteUpdatedAt}${data.noteUpdatedBy?" by "+data.noteUpdatedBy:""}`:"";
-}
-
-// ═══════════════════════════
+// ═══════════════════════
 // CALENDAR
-// ═══════════════════════════
+// ═══════════════════════
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
 document.getElementById("cal-prev").onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendar();};
 document.getElementById("cal-next").onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendar();};
 
 function renderCalendar(){
-  document.getElementById("cal-month-label").textContent=
-    new Date(calY,calM,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
-  document.getElementById("cal-dow-row").innerHTML=
-    DOW.map((n,i)=>`<div class="cal-dow${i===6?" we":""}">${n}</div>`).join("");
+  document.getElementById("cal-month-label").textContent=new Date(calY,calM,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
+  document.getElementById("cal-dow-row").innerHTML=DOW.map((n,i)=>`<div class="cal-dow${i===6?" we":""}">${n}</div>`).join("");
   const daysEl=document.getElementById("cal-days"); daysEl.innerHTML="";
   const first=new Date(calY,calM,1).getDay();
   const dim=new Date(calY,calM+1,0).getDate();
@@ -666,37 +643,27 @@ function renderCalendar(){
     const dk=`${calY}-${String(calM+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
     const dd=historyData[dk];
     const dow=new Date(calY,calM,day).getDay();
-    const kidWithDow = settings.kids.find(k=>k.schoolDays&&!k.schoolDays.includes(dow));
-    const noSchoolDay = !!kidWithDow || (settings.kids.every(k=>k.schoolDays&&!k.schoolDays.includes(dow)));
+    const isSchoolDay=settings.kids.some(k=>k.schoolDays?.includes(dow));
     const isToday=calY===td.getFullYear()&&calM===td.getMonth()&&day===td.getDate();
-
     const el=document.createElement("div");
-    el.className=`cal-day${isToday?" today":""}${noSchoolDay?" noschoolday":""}`;
-
-    let capsulesHtml="";
-    let tagHtml="";
+    el.className=`cal-day${isToday?" today":""}${!isSchoolDay?" noschoolday":""}`;
+    let capHtml=""; let tagHtml="";
     if(dd?.kids){
-      const anyNS=KIDS_DEFAULT.some(k=>dd.kids[k.id]?.dayType==="noschool");
-      const anyHD=KIDS_DEFAULT.some(k=>dd.kids[k.id]?.dayType==="halfday");
+      const anyNS=settings.kids.some(k=>dd.kids[k.id]?.dayType==="noschool");
+      const anyHD=settings.kids.some(k=>dd.kids[k.id]?.dayType==="halfday");
       if(anyNS) tagHtml=`<div class="cal-day-tag">No School</div>`;
       else if(anyHD) tagHtml=`<div class="cal-day-tag">½ Day</div>`;
-
-      capsulesHtml=`<div class="cal-capsules">`+KIDS_DEFAULT.map(k=>{
+      capHtml=`<div class="cal-capsules">`+settings.kids.map(k=>{
         const ks=dd.kids[k.id];
         if(!ks?.status) return "";
-        const st=STATUSES.find(x=>x.key===ks.status);
+        const st=SMAP[ks.status];
         if(!st) return "";
-        const kidSetting=settings.kids.find(x=>x.id===k.id)||k;
-        const avatarHtml=kidSetting.iconImg
-          ?`<div class="cal-capsule-avatar"><img src="${kidSetting.iconImg}"/></div>`
-          :`<div class="cal-capsule-avatar" style="background:${SB[ks.status]}">${kidSetting.icon||k.icon}</div>`;
-        return `<div class="cal-capsule" style="background:${SB[ks.status]};color:${SC[ks.status]}">`+
-          `<div class="cal-capsule-left">${avatarHtml}<span>${k.name.slice(0,4)}</span></div>`+
-          `<span>${st.icon}</span>`+
-          `</div>`;
+        const avHtml=k.iconImg?`<div class="cal-cap-avatar"><img src="${k.iconImg}"/></div>`:`<div class="cal-cap-avatar">${k.icon||"🧒"}</div>`;
+        // Use full name, rely on CSS truncation
+        return `<div class="cal-capsule" style="background:${st.bg};color:${st.color}">${avHtml}<span class="cal-cap-name">${k.name}</span></div>`;
       }).join("")+`</div>`;
     }
-    el.innerHTML=`<span class="cdn">${day}</span>${capsulesHtml}${tagHtml}`;
+    el.innerHTML=`<span class="cdn">${day}</span>${capHtml}${tagHtml}`;
     el.addEventListener("click",()=>showCalDetail(dk));
     daysEl.appendChild(el);
   }
@@ -710,174 +677,220 @@ function renderCalendar(){
 
 function showCalDetail(dk){
   const detail=document.getElementById("cal-detail");
-  const title=document.getElementById("cal-detail-title");
-  const body=document.getElementById("cal-detail-body");
   const data=historyData[dk];
-  title.textContent=new Date(dk+"T00:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+  document.getElementById("cal-detail-title").textContent=new Date(dk+"T00:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
   detail.classList.add("visible");
+  const body=document.getElementById("cal-detail-body");
   if(!data?.kids){body.innerHTML=`<div style="color:var(--muted);font-size:.82rem;padding:6px 0">No data for this day.</div>`;return;}
-  body.innerHTML=KIDS_DEFAULT.map(k=>{
+  body.innerHTML=settings.kids.map(k=>{
     const ks=data.kids[k.id]; if(!ks) return "";
-    const st=STATUSES.find(x=>x.key===ks.status);
-    const kidSetting=settings.kids.find(x=>x.id===k.id)||k;
-    const avatarHtml=kidSetting.iconImg
-      ?`<div class="cal-detail-avatar"><img src="${kidSetting.iconImg}"/></div>`
-      :`<div class="cal-detail-avatar">${kidSetting.icon||k.icon}</div>`;
-    const stB=st?`<span class="mbadge" style="background:${SB[ks.status]};color:${SC[ks.status]}">${st.icon} ${st.label}</span>`
-      :`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">—</span>`;
+    const st=ks.status?SMAP[ks.status]:null;
+    const avHtml=k.iconImg?`<div class="cal-det-av"><img src="${k.iconImg}"/></div>`:`<div class="cal-det-av">${k.icon||"🧒"}</div>`;
+    const stB=st?`<span class="mbadge" style="background:${st.bg};color:${st.color}">${st.icon} ${st.label}</span>`:`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">—</span>`;
     const pB=ks.pickup?`<span class="mbadge" style="background:#f1f5f9;color:var(--muted)">${ks.pickup==="abba"?"👨 Abba":"👩 Ima"}</span>`:"";
     const dtB=ks.dayType?`<span class="mbadge" style="background:#fff7ed;color:#c2410c">${ks.dayType==="noschool"?"🚫 No School":"🌤️ Half Day"}</span>`:"";
-    return `<div class="cal-detail-kid">${avatarHtml}<div class="cal-dn">${k.name}</div><div class="cal-badges">${stB}${pB}${dtB}</div></div>`;
+    return `<div class="cal-detail-kid">${avHtml}<div class="cal-dn">${k.name}</div><div class="cal-badges">${stB}${pB}${dtB}</div></div>`;
   }).join("")+(data.dailyNote?`<div style="margin-top:10px;padding:8px;background:#f8fafc;border-radius:8px;font-size:.78rem;font-weight:600">📝 ${data.dailyNote}</div>`:"");
 }
 
-// ═══════════════════════════
-// SETTINGS MODAL
-// ═══════════════════════════
-// Track temp icon selections
-let tempIcons = {};
+// ═══════════════════════
+// SETTINGS
+// ═══════════════════════
+let tempIcons={};
 
 function openSettings(){
   document.getElementById("s-username").value=userName||"";
+  buildKidSections();
+  const nb=document.getElementById("notif-btn");
+  if(!("Notification" in window)) nb.textContent="Not supported";
+  else if(Notification.permission==="granted") nb.textContent="✅ Enabled";
+  else if(Notification.permission==="denied") nb.textContent="❌ Blocked";
+  else nb.textContent="Enable";
+  document.getElementById("settings-modal").classList.add("visible");
+}
 
-  // Build per-kid sections
+function buildKidSections(){
   const container=document.getElementById("per-kid-sections");
   container.innerHTML="";
-  KIDS_DEFAULT.forEach(kid=>{
-    const ks=settings.kids.find(k=>k.id===kid.id)||kid;
-    tempIcons[kid.id] = {icon: ks.icon||kid.icon, iconImg: ks.iconImg||null};
-
+  tempIcons={};
+  settings.kids.forEach((kid,idx)=>{
+    tempIcons[kid.id]={icon:kid.icon,iconImg:kid.iconImg||null};
     const sec=document.createElement("div");
     sec.className="ssection";
     sec.innerHTML=`
-      <div class="ssection-title">${ks.icon||kid.icon} ${kid.name}'s Settings</div>
+      <div class="ssection-title">
+        <span id="sec-title-${kid.id}">${kid.iconImg?"📷":kid.icon} ${kid.name}</span>
+        <button class="remove-kid-btn" onclick="removeKid('${kid.id}')">Remove</button>
+      </div>
+      <!-- Name -->
       <div class="srow">
-        <div><div class="slbl">School Days</div><div class="ssub">Days ${kid.name} goes to school</div></div>
+        <div><div class="slbl">Name</div></div>
+        <div class="sctl"><input type="text" class="wide" id="s-name-${kid.id}" value="${kid.name}" placeholder="Child's name"/></div>
+      </div>
+      <!-- Hidden toggle -->
+      <div class="srow">
+        <div><div class="slbl">Hide from Today view</div><div class="ssub">Useful if on vacation or visiting Savta</div></div>
+        <div class="sctl">
+          <div class="hide-toggle" onclick="toggleHide('${kid.id}')">
+            <div class="toggle-track${kid.hidden?" on":""}" id="toggle-${kid.id}"><div class="toggle-thumb"></div></div>
+            <span style="font-size:.75rem;font-weight:700;color:var(--muted)" id="toggle-lbl-${kid.id}">${kid.hidden?"Hidden":"Visible"}</span>
+          </div>
+        </div>
+      </div>
+      <!-- School days -->
+      <div class="srow">
+        <div><div class="slbl">School Days</div></div>
         <div class="sctl"><div class="dow-picker" id="dow-${kid.id}"></div></div>
       </div>
+      <!-- Times -->
       <div class="srow">
         <div><div class="slbl">School End Time</div><div class="ssub">Regular end time</div></div>
-        <div class="sctl"><input type="time" id="set-end-${kid.id}" value="${ks.endTime||'14:00'}"/></div>
+        <div class="sctl"><input type="time" id="s-end-${kid.id}" value="${kid.endTime||'14:00'}"/></div>
       </div>
       <div class="srow">
-        <div><div class="slbl">Half Day End Time</div><div class="ssub">End time on half days</div></div>
-        <div class="sctl"><input type="time" id="set-hd-${kid.id}" value="${ks.halfdayTime||'12:00'}"/></div>
+        <div><div class="slbl">Half Day End</div><div class="ssub">When half day is selected</div></div>
+        <div class="sctl"><input type="time" id="s-hd-${kid.id}" value="${kid.halfdayTime||'12:00'}"/></div>
       </div>
       <div class="srow">
         <div><div class="slbl">Default Pickup Time</div></div>
-        <div class="sctl"><input type="time" id="set-pt-${kid.id}" value="${ks.pickupTime||''}"/></div>
+        <div class="sctl"><input type="time" id="s-pt-${kid.id}" value="${kid.pickupTime||''}"/></div>
       </div>
+      <!-- Enabled statuses -->
       <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <div><div class="slbl">Icon / Photo</div><div class="ssub">Choose an emoji or upload a photo</div></div>
-        <div class="icon-picker" id="icon-picker-${kid.id}"></div>
-        <label class="upload-btn">
-          📷 Upload photo
-          <input type="file" accept="image/*" style="display:none" onchange="handleIconUpload(event,'${kid.id}')"/>
-        </label>
-        <div id="icon-preview-${kid.id}" style="margin-top:4px"></div>
+        <div><div class="slbl">Visible Statuses</div><div class="ssub">Only show relevant options</div></div>
+        <div class="status-toggle-group" id="st-tog-${kid.id}"></div>
+      </div>
+      <!-- Icon picker -->
+      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div><div class="slbl">Icon / Photo</div></div>
+        <div class="icon-picker" id="ip-${kid.id}"></div>
+        <label class="upload-btn">📷 Upload photo<input type="file" accept="image/*" style="display:none" onchange="handleUpload(event,'${kid.id}')"/></label>
+        <div id="ip-preview-${kid.id}">${kid.iconImg?`<img src="${kid.iconImg}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`:""}
+        </div>
       </div>`;
     container.appendChild(sec);
 
     // DOW picker
-    const dowPicker=document.getElementById(`dow-${kid.id}`);
-    const schoolDays = ks.schoolDays||[0,1,2,3,4,5];
-    dowPicker.innerHTML=DOW.map((n,i)=>
-      `<div class="dow-chip${schoolDays.includes(i)?" active":""}" data-kid="${kid.id}" data-dow="${i}">${n}</div>`
-    ).join("");
-    dowPicker.querySelectorAll(".dow-chip").forEach(c=>c.addEventListener("click",()=>{
+    const dp=document.getElementById(`dow-${kid.id}`);
+    const sd=kid.schoolDays||[0,1,2,3,4,5];
+    dp.innerHTML=DOW.map((n,i)=>`<div class="dow-chip${sd.includes(i)?" active":""}" data-kid="${kid.id}" data-dow="${i}">${n}</div>`).join("");
+    dp.querySelectorAll(".dow-chip").forEach(c=>c.addEventListener("click",()=>{
       const dw=parseInt(c.dataset.dow);
-      const ks2=settings.kids.find(k=>k.id===c.dataset.kid);
-      if(!ks2.schoolDays) ks2.schoolDays=[0,1,2,3,4,5];
-      const idx=ks2.schoolDays.indexOf(dw);
-      if(idx>-1) ks2.schoolDays.splice(idx,1); else ks2.schoolDays.push(dw);
-      ks2.schoolDays.sort();
-      c.classList.toggle("active",ks2.schoolDays.includes(dw));
+      const ks=settings.kids.find(k=>k.id===c.dataset.kid);
+      if(!ks.schoolDays) ks.schoolDays=[0,1,2,3,4,5];
+      const i=ks.schoolDays.indexOf(dw);
+      if(i>-1) ks.schoolDays.splice(i,1); else ks.schoolDays.push(dw);
+      ks.schoolDays.sort(); c.classList.toggle("active",ks.schoolDays.includes(dw));
     }));
 
+    // Status toggles
+    const stg=document.getElementById(`st-tog-${kid.id}`);
+    const enabled=kid.enabledStatuses||ALL_STATUSES.map(s=>s.key);
+    ALL_STATUSES.forEach(st=>{
+      const t=document.createElement("div");
+      t.className="status-toggle"+(enabled.includes(st.key)?" on":"");
+      t.textContent=`${st.icon} ${st.label}`;
+      t.dataset.kid=kid.id; t.dataset.status=st.key;
+      t.addEventListener("click",()=>{
+        t.classList.toggle("on");
+        if(t.classList.contains("on")){t.style.background=st.bg;t.style.color=st.color;t.style.borderColor=st.color;}
+        else{t.style.background="";t.style.color="";t.style.borderColor="";}
+      });
+      if(enabled.includes(st.key)){t.style.background=st.bg;t.style.color=st.color;t.style.borderColor=st.color;}
+      stg.appendChild(t);
+    });
+
     // Icon picker
-    const iconPicker=document.getElementById(`icon-picker-${kid.id}`);
+    const ip=document.getElementById(`ip-${kid.id}`);
     ICON_OPTIONS.forEach(ic=>{
       const opt=document.createElement("div");
       opt.className="icon-opt"+(tempIcons[kid.id].icon===ic&&!tempIcons[kid.id].iconImg?" selected":"");
       opt.textContent=ic;
       opt.addEventListener("click",()=>{
         tempIcons[kid.id]={icon:ic,iconImg:null};
-        iconPicker.querySelectorAll(".icon-opt").forEach(o=>o.classList.remove("selected"));
+        ip.querySelectorAll(".icon-opt").forEach(o=>o.classList.remove("selected"));
         opt.classList.add("selected");
-        document.getElementById(`icon-preview-${kid.id}`).innerHTML="";
+        document.getElementById(`ip-preview-${kid.id}`).innerHTML="";
+        document.getElementById(`sec-title-${kid.id}`).textContent=`${ic} ${document.getElementById(`s-name-${kid.id}`).value||kid.name}`;
       });
-      iconPicker.appendChild(opt);
+      ip.appendChild(opt);
     });
-
-    // If has uploaded image, show preview
-    if(ks.iconImg){
-      document.getElementById(`icon-preview-${kid.id}`).innerHTML=
-        `<img src="${ks.iconImg}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`;
-    }
   });
-
-  // Notification button
-  const nb=document.getElementById("notif-btn");
-  if(!("Notification" in window)) nb.textContent="Not supported";
-  else if(Notification.permission==="granted") nb.textContent="✅ Enabled";
-  else if(Notification.permission==="denied") nb.textContent="❌ Blocked in browser";
-  else nb.textContent="Enable";
-
-  document.getElementById("settings-modal").classList.add("visible");
 }
 
-function handleIconUpload(event, kidId){
+function toggleHide(kidId){
+  const kid=settings.kids.find(k=>k.id===kidId);
+  if(!kid) return;
+  kid.hidden=!kid.hidden;
+  const track=document.getElementById(`toggle-${kidId}`);
+  const lbl=document.getElementById(`toggle-lbl-${kidId}`);
+  track.classList.toggle("on",kid.hidden);
+  lbl.textContent=kid.hidden?"Hidden":"Visible";
+}
+
+function handleUpload(event,kidId){
   const file=event.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=e=>{
-    const dataUrl=e.target.result;
-    tempIcons[kidId]={icon:null,iconImg:dataUrl};
-    // Clear emoji selections
-    document.querySelectorAll(`#icon-picker-${kidId} .icon-opt`).forEach(o=>o.classList.remove("selected"));
-    document.getElementById(`icon-preview-${kidId}`).innerHTML=
-      `<img src="${dataUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`;
+    const url=e.target.result;
+    tempIcons[kidId]={icon:null,iconImg:url};
+    document.querySelectorAll(`#ip-${kidId} .icon-opt`).forEach(o=>o.classList.remove("selected"));
+    document.getElementById(`ip-preview-${kidId}`).innerHTML=`<img src="${url}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--school)"/>`;
+    const nameVal=document.getElementById(`s-name-${kidId}`)?.value||kidId;
+    document.getElementById(`sec-title-${kidId}`).textContent=`📷 ${nameVal}`;
   };
   reader.readAsDataURL(file);
 }
 
-function closeSettings(){
-  document.getElementById("settings-modal").classList.remove("visible");
+function removeKid(kidId){
+  if(!confirm(`Remove this child from KidTracker? Their history will stay on the calendar.`)) return;
+  settings.kids=settings.kids.filter(k=>k.id!==kidId);
+  buildKidSections();
 }
-function handleModalBg(e){
-  if(e.target===document.getElementById("settings-modal")) closeSettings();
+
+function addNewKid(){
+  const id="kid_"+Date.now();
+  settings.kids.push({id,name:"New Child",icon:"🧒",schoolDays:[0,1,2,3,4,5],endTime:"14:00",halfdayTime:"12:00",pickupTime:null,enabledStatuses:ALL_STATUSES.map(s=>s.key),hidden:false});
+  buildKidSections();
+  // Scroll to bottom
+  setTimeout(()=>document.getElementById("modal-inner").scrollTo({top:99999,behavior:"smooth"}),100);
 }
+
+function closeSettings(){ document.getElementById("settings-modal").classList.remove("visible"); }
+function handleModalBg(e){ if(e.target===document.getElementById("settings-modal")) closeSettings(); }
 
 function saveSettings(){
   userName=document.getElementById("s-username").value.trim();
   localStorage.setItem("kt_local",JSON.stringify({userName}));
 
-  KIDS_DEFAULT.forEach(kid=>{
-    const ks=settings.kids.find(k=>k.id===kid.id)||kid;
-    ks.endTime=document.getElementById(`set-end-${kid.id}`).value;
-    ks.halfdayTime=document.getElementById(`set-hd-${kid.id}`).value;
-    ks.pickupTime=document.getElementById(`set-pt-${kid.id}`).value||null;
+  settings.kids.forEach(kid=>{
+    kid.name=document.getElementById(`s-name-${kid.id}`)?.value?.trim()||kid.name;
+    kid.endTime=document.getElementById(`s-end-${kid.id}`)?.value||kid.endTime;
+    kid.halfdayTime=document.getElementById(`s-hd-${kid.id}`)?.value||kid.halfdayTime;
+    kid.pickupTime=document.getElementById(`s-pt-${kid.id}`)?.value||null;
+    // Enabled statuses
+    const tog=document.querySelectorAll(`#st-tog-${kid.id} .status-toggle.on`);
+    kid.enabledStatuses=Array.from(tog).map(t=>t.dataset.status);
+    // Icons
     if(tempIcons[kid.id]){
-      ks.icon=tempIcons[kid.id].icon||kid.icon;
-      ks.iconImg=tempIcons[kid.id].iconImg||null;
+      if(tempIcons[kid.id].iconImg){ kid.iconImg=tempIcons[kid.id].iconImg; kid.icon=kid.icon||"🧒"; }
+      else { kid.icon=tempIcons[kid.id].icon||kid.icon; kid.iconImg=null; }
     }
   });
 
-  // Save settings to Firebase — but strip large image data to keep it small
-  const settingsForFirebase = {
-    kids: settings.kids.map(k=>({...k, iconImg:undefined}))
-  };
-  if(window._fbSet) window._fbSet(DB_SET, settingsForFirebase);
+  // Save icons locally (too large for Firebase)
+  const icons={};
+  settings.kids.forEach(k=>{ if(k.iconImg) icons[k.id]=k.iconImg; });
+  localStorage.setItem("kt_icons",JSON.stringify(icons));
 
-  // Save icon images locally
-  const localIcons={};
-  settings.kids.forEach(k=>{ if(k.iconImg) localIcons[k.id]=k.iconImg; });
-  localStorage.setItem("kt_icons",JSON.stringify(localIcons));
+  // Save rest to Firebase (no iconImg)
+  const fbSettings={kids:settings.kids.map(k=>({...k,iconImg:undefined}))};
+  if(window._fbSet) window._fbSet("kidtracker/settings",fbSettings);
 
   closeSettings();
-  // Re-render with new settings
-  renderToday(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
-  schedulePickupReminders(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
-
+  rebuildCards();
+  renderToday();
+  schedulePickupReminders(getCurrentDayData());
   const btn=document.querySelector(".save-btn");
   btn.textContent="✅ Saved!";
   setTimeout(()=>btn.textContent="💾 Save Settings",1800);
@@ -886,54 +899,36 @@ function saveSettings(){
 function resetToday(){
   if(!confirm("Reset all statuses for this day?")) return;
   saveDayData(emptyDayData());
-  renderToday(emptyDayData());
+  renderToday();
   closeSettings();
 }
 
-// Load local icons on startup
-(()=>{
-  try {
-    const localIcons=JSON.parse(localStorage.getItem("kt_icons")||"{}");
-    settings.kids.forEach(k=>{ if(localIcons[k.id]) k.iconImg=localIcons[k.id]; });
-  } catch(e){}
-})();
-
-// ═══════════════════════════
+// ═══════════════════════
 // NOTIFICATIONS
-// ═══════════════════════════
+// ═══════════════════════
 let notifTimers=[];
 async function requestNotifications(){
-  if(!("Notification" in window)){alert("Notifications not supported.");return;}
-  const perm=await Notification.requestPermission();
-  document.getElementById("notif-btn").textContent=perm==="granted"?"✅ Enabled":"❌ Blocked in browser";
-  if(perm==="granted") schedulePickupReminders(dayCache[getViewKey(viewDateOffset)]||emptyDayData());
+  if(!("Notification" in window)){alert("Not supported in this browser.");return;}
+  const p=await Notification.requestPermission();
+  document.getElementById("notif-btn").textContent=p==="granted"?"✅ Enabled":"❌ Blocked";
+  if(p==="granted") schedulePickupReminders(getCurrentDayData());
 }
-
 function schedulePickupReminders(data){
   notifTimers.forEach(t=>clearTimeout(t)); notifTimers=[];
   if(!("Notification" in window)||Notification.permission!=="granted") return;
-  KIDS_DEFAULT.forEach(kid=>{
-    const ks=data?.kids[kid.id]||{};
-    const kidSetting=settings.kids.find(k=>k.id===kid.id)||kid;
-    const pt=ks.pickupTime||kidSetting.pickupTime;
-    if(!pt) return;
+  settings.kids.forEach(kid=>{
+    const ks=data?.kids?.[kid.id]||{};
+    const pt=ks.pickupTime||kid.pickupTime; if(!pt) return;
     const[ph,pm]=pt.split(":").map(Number);
-    const reminderTime=new Date(); reminderTime.setHours(ph,pm-15,0,0);
-    const ms=reminderTime.getTime()-Date.now();
-    if(ms>0){
-      notifTimers.push(setTimeout(()=>{
-        new Notification("🚗 Pickup Reminder",{
-          body:`${kid.name}'s pickup is in 15 minutes (${pt})`,
-          icon:"https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f9d2.png"
-        });
-      },ms));
-    }
+    const rem=new Date(); rem.setHours(ph,pm-15,0,0);
+    const ms=rem.getTime()-Date.now();
+    if(ms>0) notifTimers.push(setTimeout(()=>new Notification("🚗 Pickup Reminder",{body:`${kid.name}'s pickup in 15 min (${pt})`}),ms));
   });
 }
 
-// ═══════════════════════════
+// ═══════════════════════
 // PAGE NAV
-// ═══════════════════════════
+// ═══════════════════════
 function showPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-tab").forEach(b=>b.classList.remove("active"));
@@ -943,17 +938,14 @@ function showPage(name){
   if(name==="calendar") renderCalendar();
 }
 
-// ═══════════════════════════
-// HELPERS
-// ═══════════════════════════
 function fmt(d){return d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});}
-setInterval(()=>{
-  const data=dayCache[getViewKey(viewDateOffset)];
-  if(data) KIDS_DEFAULT.forEach(k=>renderKid(k,data));
-},60000);
+setInterval(()=>renderToday(),60000);
 
+// INIT
+applyLocalIcons();
 updateDateBar();
-renderToday(emptyDayData());
+rebuildCards();
+renderToday();
 </script>
 </body>
 </html>
