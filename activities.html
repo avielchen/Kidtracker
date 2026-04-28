@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>KidTracker — Activities</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<script type="module" src="firebase-loader.js"></script>
+<script src="shared.js"></script>
+<style>
+.act-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:8px; overflow:hidden; }
+.act-header { display:flex; align-items:center; gap:10px; padding:10px 13px; border-bottom:1px solid var(--border); }
+.act-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; background:#f0f4f8; flex-shrink:0; overflow:hidden; }
+.act-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.act-body { padding:9px 13px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.act-time { font-size:.72rem; font-weight:800; color:var(--text); }
+.act-note { font-size:.7rem; color:var(--muted); font-weight:600; flex:1; min-width:100px; }
+.act-actions { display:flex; gap:5px; margin-left:auto; }
+.act-action-btn { background:none; border:1.5px solid var(--border); border-radius:7px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.78rem; color:var(--muted); transition:all .12s; }
+.act-action-btn:hover { border-color:var(--blue); color:var(--blue); }
+.act-action-btn.del:hover { border-color:var(--red); color:var(--red); }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin:16px 0 8px; }
+.section-header h3 { font-size:.82rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.filter-row { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+.filter-chip { padding:4px 10px; border-radius:20px; font-size:.68rem; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:var(--card); color:var(--muted); transition:all .12s; white-space:nowrap; }
+.filter-chip.active { background:var(--blue-bg); color:var(--blue); border-color:var(--blue); }
+/* Request badge for kid-submitted activities */
+.req-badge { background:var(--amber-bg); color:var(--amber); font-size:.6rem; font-weight:800; padding:2px 7px; border-radius:20px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none"></div>
+
+<!-- NAV -->
+<div class="top-nav"><div class="top-nav-inner" id="top-nav-inner"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">
+    🎯 Activities
+    <button class="btn btn-primary btn-sm" onclick="openAddActivity()">➕ Add</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row" id="filter-row">
+    <div class="filter-chip active" data-filter="all">All</div>
+    <div class="filter-chip" data-filter="upcoming">Upcoming</div>
+    <div class="filter-chip" data-filter="today">Today</div>
+    <div class="filter-chip" data-filter="requests">Kid Requests</div>
+  </div>
+
+  <!-- Kid filter -->
+  <div class="filter-row" id="kid-filter-row"></div>
+
+  <div id="activities-list"></div>
+</div>
+
+<!-- Add/Edit modal -->
+<div class="modal-overlay" id="act-modal" onclick="handleModalBg(event,'act-modal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <button class="modal-close" onclick="closeModal('act-modal')">✕</button>
+  <div class="modal-title" id="act-modal-title">Add Activity</div>
+
+  <div class="form-row">
+    <div class="form-label">Child</div>
+    <select class="kt-input" id="act-kid"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Activity Type</div>
+    <select class="kt-input" id="act-type"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Date</div>
+    <input type="date" class="kt-input" id="act-date"/>
+  </div>
+  <div class="form-row-inline">
+    <div class="form-row" style="flex:1">
+      <div class="form-label">Start Time</div>
+      <input type="time" class="kt-input" id="act-start"/>
+    </div>
+    <div class="form-row" style="flex:1">
+      <div class="form-label">End Time</div>
+      <input type="time" class="kt-input" id="act-end"/>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Drop-off by</div>
+    <select class="kt-input" id="act-dropoff"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Pick-up by</div>
+    <select class="kt-input" id="act-pickup"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Notes</div>
+    <input type="text" class="kt-input" id="act-notes" placeholder="Address, instructions…"/>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Repeats</div>
+    <select class="kt-input" id="act-repeat">
+      <option value="none">Does not repeat</option>
+      <option value="weekly">Every week</option>
+      <option value="biweekly">Every 2 weeks</option>
+    </select>
+  </div>
+  <input type="hidden" id="act-edit-key"/>
+  <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="saveActivity()">Save Activity</button>
+</div>
+</div>
+
+<script>
+let activities = {};
+let activeFilter = "all";
+let activeKidFilter = "all";
+let editingKey = null;
+
+document.addEventListener("auth-change", e => {
+  if (!e.detail) { document.getElementById("login-screen").style.display="flex"; return; }
+  document.getElementById("login-screen").style.display="none";
+  ktInit("activities", () => {
+    buildKidFilter();
+    loadActivities();
+  });
+});
+
+function loadActivities() {
+  ktOn("kidtracker/activities", data => {
+    activities = data || {};
+    renderActivities();
+  });
+}
+
+function buildKidFilter() {
+  const row = document.getElementById("kid-filter-row");
+  row.innerHTML = `<div class="filter-chip active" data-kid="all">All Kids</div>` +
+    window.KT.settings.kids.map(k => `<div class="filter-chip" data-kid="${k.id}">${k.icon} ${k.name}</div>`).join("");
+  row.querySelectorAll(".filter-chip").forEach(c => c.addEventListener("click", () => {
+    row.querySelectorAll(".filter-chip").forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    activeKidFilter = c.dataset.kid;
+    renderActivities();
+  }));
+}
+
+document.getElementById("filter-row").querySelectorAll(".filter-chip").forEach(c =>
+  c.addEventListener("click", () => {
+    document.getElementById("filter-row").querySelectorAll(".filter-chip").forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    activeFilter = c.dataset.filter;
+    renderActivities();
+  })
+);
+
+function renderActivities() {
+  const list = document.getElementById("activities-list");
+  const todayStr = ktTodayKey();
+  let entries = Object.entries(activities).map(([k,v]) => ({key:k,...v}));
+
+  // Filter
+  entries = entries.filter(a => {
+    if (activeKidFilter !== "all" && a.kidId !== activeKidFilter) return false;
+    if (activeFilter === "upcoming") return a.date >= todayStr;
+    if (activeFilter === "today") return a.date === todayStr;
+    if (activeFilter === "requests") return a.isRequest;
+    return true;
+  });
+  entries.sort((a,b) => (a.date+a.startTime).localeCompare(b.date+b.startTime));
+
+  if (!entries.length) {
+    list.innerHTML = `<div class="empty-state"><span class="emoji">🎯</span><p>No activities found</p></div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  entries.forEach(a => { (groups[a.date] = groups[a.date] || []).push(a); });
+
+  list.innerHTML = Object.entries(groups).map(([date, acts]) => {
+    const isToday = date === todayStr;
+    const label = isToday ? "Today" : ktFmtDate(date + "T00:00:00");
+    return `<div class="section-header"><h3>${label}</h3></div>` +
+      acts.map(a => renderActivityCard(a)).join("");
+  }).join("");
+}
+
+function renderActivityCard(a) {
+  const kid = window.KT.settings.kids.find(k => k.id === a.kidId) || {};
+  const avHtml = kid.iconImg ? `<img src="${kid.iconImg}"/>` : (kid.icon || "🧒");
+  const isParent = window.KT.userRole === "parent";
+  const reqBadge = a.isRequest ? `<span class="req-badge">⭐ Kid Request</span>` : "";
+  const repeatBadge = a.repeat && a.repeat !== "none" ? `<span class="badge badge-blue">${a.repeat==="weekly"?"Weekly":"Bi-weekly"}</span>` : "";
+
+  return `<div class="act-card">
+    <div class="act-header">
+      <div class="act-avatar">${avHtml}</div>
+      <div style="flex:1">
+        <div style="font-weight:900;font-size:.88rem">${a.type || "Activity"} ${reqBadge}</div>
+        <div style="font-size:.7rem;color:var(--muted);font-weight:600">${kid.name || ""} ${repeatBadge}</div>
+      </div>
+      ${isParent ? `<div class="act-actions">
+        <button class="act-action-btn" onclick="editActivity('${a.key}')">✏️</button>
+        <button class="act-action-btn del" onclick="deleteActivity('${a.key}')">✕</button>
+      </div>` : ""}
+    </div>
+    <div class="act-body">
+      ${a.startTime ? `<div class="act-time">🕐 ${ktFmtTime(a.startTime)}${a.endTime?" — "+ktFmtTime(a.endTime):""}</div>` : ""}
+      ${a.dropoff ? `<span class="badge badge-blue">Drop-off: ${capitalize(a.dropoff)}</span>` : ""}
+      ${a.pickup  ? `<span class="badge badge-green">Pick-up: ${capitalize(a.pickup)}</span>` : ""}
+      ${a.notes ? `<div class="act-note">📍 ${a.notes}</div>` : ""}
+    </div>
+  </div>`;
+}
+
+function openAddActivity(prefillKidId) {
+  editingKey = null;
+  document.getElementById("act-modal-title").textContent = "Add Activity";
+  document.getElementById("act-date").value = ktTodayKey();
+  document.getElementById("act-notes").value = "";
+  document.getElementById("act-start").value = "";
+  document.getElementById("act-end").value = "";
+  document.getElementById("act-repeat").value = "none";
+  populateActSelects(prefillKidId);
+  document.getElementById("act-modal").classList.add("visible");
+}
+
+function editActivity(key) {
+  const a = activities[key]; if (!a) return;
+  editingKey = key;
+  document.getElementById("act-modal-title").textContent = "Edit Activity";
+  populateActSelects(a.kidId);
+  document.getElementById("act-kid").value = a.kidId || "";
+  document.getElementById("act-type").value = a.type || "";
+  document.getElementById("act-date").value = a.date || "";
+  document.getElementById("act-start").value = a.startTime || "";
+  document.getElementById("act-end").value = a.endTime || "";
+  document.getElementById("act-dropoff").value = a.dropoff || "";
+  document.getElementById("act-pickup").value = a.pickup || "";
+  document.getElementById("act-notes").value = a.notes || "";
+  document.getElementById("act-repeat").value = a.repeat || "none";
+  document.getElementById("act-modal").classList.add("visible");
+}
+
+function populateActSelects(selectedKidId) {
+  const kids = window.KT.settings.kids;
+  document.getElementById("act-kid").innerHTML = kids.map(k => `<option value="${k.id}" ${k.id===selectedKidId?"selected":""}>${k.icon} ${k.name}</option>`).join("");
+  const cats = window.KT.settings.activityCategories || [];
+  document.getElementById("act-type").innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join("");
+  const users = Object.values(window.KT.sharedUserRegistry);
+  const userOpts = `<option value="">— Not assigned —</option>` + users.map(u => `<option value="${u.name.toLowerCase()}">${u.name}</option>`).join("");
+  document.getElementById("act-dropoff").innerHTML = userOpts;
+  document.getElementById("act-pickup").innerHTML = userOpts;
+}
+
+function saveActivity() {
+  const kidId = document.getElementById("act-kid").value;
+  const type  = document.getElementById("act-type").value;
+  const date  = document.getElementById("act-date").value;
+  if (!kidId || !date) { ktToast("Please fill in child and date", "danger"); return; }
+
+  const entry = {
+    kidId, type, date,
+    startTime: document.getElementById("act-start").value,
+    endTime:   document.getElementById("act-end").value,
+    dropoff:   document.getElementById("act-dropoff").value,
+    pickup:    document.getElementById("act-pickup").value,
+    notes:     document.getElementById("act-notes").value,
+    repeat:    document.getElementById("act-repeat").value,
+    createdBy: window.KT.userName,
+    createdAt: Date.now(),
+    isRequest: false,
+  };
+
+  const key = editingKey || `act_${Date.now()}`;
+  ktSet(`kidtracker/activities/${key}`, entry);
+  const kid = window.KT.settings.kids.find(k => k.id === kidId);
+  ktLogFeed(editingKey ? "edited activity" : "added activity", `${type} for ${kid?.name || kidId} on ${ktFmtDate(date+"T00:00:00")}`);
+  closeModal("act-modal");
+  ktToast(editingKey ? "Activity updated ✅" : "Activity added ✅", "success");
+}
+
+function deleteActivity(key) {
+  if (!confirm("Delete this activity?")) return;
+  const a = activities[key];
+  ktSet(`kidtracker/activities/${key}`, null);
+  ktLogFeed("deleted activity", `${a?.type || "Activity"} on ${a?.date || ""}`);
+  ktToast("Deleted", "");
+}
+
+function closeModal(id) { document.getElementById(id)?.classList.remove("visible"); }
+function handleModalBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+// Load login screen HTML
+document.getElementById("login-screen").innerHTML = KT_LOGIN_HTML;
+</script>
+</body>
+</html>

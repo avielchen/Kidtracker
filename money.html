@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>KidTracker — Money</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<script type="module" src="firebase-loader.js"></script>
+<script src="shared.js"></script>
+<style>
+.money-tabs { display:flex; gap:3px; margin-bottom:14px; background:var(--card); border:1.5px solid var(--border); border-radius:10px; padding:4px; }
+.money-tab { flex:1; padding:7px; border:none; background:transparent; border-radius:7px; font-family:'Nunito',sans-serif; font-weight:700; font-size:.76rem; cursor:pointer; color:var(--muted); transition:all .15s; }
+.money-tab.active { background:var(--blue); color:#fff; }
+.expense-row { display:flex; align-items:center; gap:10px; padding:10px 13px; border-bottom:1px solid var(--border); }
+.expense-row:last-child { border-bottom:none; }
+.exp-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; background:#f0f4f8; flex-shrink:0; }
+.exp-info { flex:1; min-width:0; }
+.exp-name { font-weight:800; font-size:.82rem; }
+.exp-meta { font-size:.65rem; color:var(--muted); font-weight:600; margin-top:1px; }
+.exp-amount { font-weight:900; font-size:.9rem; text-align:right; flex-shrink:0; }
+.exp-split { font-size:.62rem; color:var(--muted); font-weight:600; margin-top:1px; text-align:right; }
+.balance-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px; margin-bottom:12px; }
+.balance-title { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:10px; }
+.balance-main { font-size:1.8rem; font-weight:900; }
+.balance-sub { font-size:.78rem; font-weight:600; color:var(--muted); margin-top:3px; }
+.balance-positive { color:var(--green); }
+.balance-negative { color:var(--red); }
+.balance-zero { color:var(--muted); }
+.cat-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.cat-bar-label { font-size:.65rem; font-weight:700; color:var(--muted); width:80px; flex-shrink:0; }
+.cat-bar-track { flex:1; height:8px; background:#f1f5f9; border-radius:20px; overflow:hidden; }
+.cat-bar-fill { height:100%; border-radius:20px; background:var(--blue); }
+.cat-bar-count { font-size:.65rem; font-weight:800; width:48px; text-align:right; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="display:none"></div>
+<div class="top-nav"><div class="top-nav-inner" id="top-nav-inner"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">
+    💰 Money
+    <button class="btn btn-primary btn-sm" onclick="openAddExpense()">➕ Add</button>
+  </div>
+
+  <div class="money-tabs">
+    <button class="money-tab active" onclick="switchTab('log',this)">📋 Log</button>
+    <button class="money-tab" onclick="switchTab('report',this)">📊 Report</button>
+    <button class="money-tab" onclick="switchTab('balance',this)">⚖️ Balance</button>
+  </div>
+
+  <div id="tab-log"></div>
+  <div id="tab-report" style="display:none"></div>
+  <div id="tab-balance" style="display:none"></div>
+</div>
+
+<!-- Add Expense Modal -->
+<div class="modal-overlay" id="exp-modal" onclick="handleModalBg(event,'exp-modal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <button class="modal-close" onclick="closeModal('exp-modal')">✕</button>
+  <div class="modal-title" id="exp-modal-title">Add Expense</div>
+  <div class="form-row">
+    <div class="form-label">Child (or General)</div>
+    <select class="kt-input" id="exp-kid">
+      <option value="general">General / All Kids</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Category</div>
+    <select class="kt-input" id="exp-cat"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Description</div>
+    <input type="text" class="kt-input" id="exp-desc" placeholder="e.g. Soccer registration"/>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Amount (₪ or local currency)</div>
+    <input type="number" class="kt-input" id="exp-amount" placeholder="0.00" min="0" step="0.01"/>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Date</div>
+    <input type="date" class="kt-input" id="exp-date"/>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Paid by</div>
+    <select class="kt-input" id="exp-paidby"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Split — <span id="split-label">50%</span> you / rest other parent</div>
+    <input type="range" id="exp-split" min="0" max="100" value="50" style="width:100%" oninput="document.getElementById('split-label').textContent=this.value+'%'"/>
+    <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);font-weight:600;margin-top:2px"><span>0%</span><span>50/50</span><span>100%</span></div>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Notes</div>
+    <input type="text" class="kt-input" id="exp-notes" placeholder="Optional note…"/>
+  </div>
+  <input type="hidden" id="exp-edit-key"/>
+  <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="saveExpense()">Save Expense</button>
+</div>
+</div>
+
+<script>
+let expenses = {};
+let currentTab = "log";
+let editingExpKey = null;
+
+document.addEventListener("auth-change", e => {
+  if (!e.detail) { document.getElementById("login-screen").style.display="flex"; return; }
+  document.getElementById("login-screen").style.display="none";
+  // Money is parent-only
+  if (window.KT && window.KT.userRole === "kid") {
+    document.querySelector(".page-wrap").innerHTML = `<div class="empty-state"><span class="emoji">🔒</span><p>Money log is for parents only</p></div>`;
+    return;
+  }
+  ktInit("money", () => loadExpenses());
+});
+
+function loadExpenses() {
+  ktOn("kidtracker/money", data => {
+    expenses = data || {};
+    renderCurrentTab();
+  });
+}
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll(".money-tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("tab-log").style.display = tab==="log"?"block":"none";
+  document.getElementById("tab-report").style.display = tab==="report"?"block":"none";
+  document.getElementById("tab-balance").style.display = tab==="balance"?"block":"none";
+  renderCurrentTab();
+}
+
+function renderCurrentTab() {
+  if (currentTab === "log") renderLog();
+  else if (currentTab === "report") renderReport();
+  else renderBalance();
+}
+
+function renderLog() {
+  const el = document.getElementById("tab-log");
+  const entries = Object.entries(expenses).map(([k,v]) => ({key:k,...v}))
+    .sort((a,b) => (b.date||"").localeCompare(a.date||""));
+
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty-state"><span class="emoji">💰</span><p>No expenses yet. Tap ➕ to add one.</p></div>`;
+    return;
+  }
+
+  // Group by month
+  const groups = {};
+  entries.forEach(e => {
+    const month = (e.date||"").slice(0,7);
+    (groups[month] = groups[month]||[]).push(e);
+  });
+
+  el.innerHTML = Object.entries(groups).map(([month, exps]) => {
+    const total = exps.reduce((s,e) => s + (parseFloat(e.amount)||0), 0);
+    const monthLabel = new Date(month+"-01").toLocaleDateString("en-US",{month:"long",year:"numeric"});
+    return `<div class="kt-card">
+      <div class="kt-card-header" style="justify-content:space-between">
+        <span>${monthLabel}</span>
+        <span style="font-weight:900;color:var(--blue)">${fmtMoney(total)}</span>
+      </div>
+      ${exps.map(e => renderExpenseRow(e)).join("")}
+    </div>`;
+  }).join("");
+}
+
+function renderExpenseRow(e) {
+  const kid = window.KT.settings.kids.find(k => k.id === e.kidId);
+  const iconHtml = kid?.iconImg ? `<img src="${kid.iconImg}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>` : (kid?.icon || "💰");
+  const myPct = e.splitPct ?? 50;
+  const myShare = ((parseFloat(e.amount)||0) * myPct / 100).toFixed(2);
+  const otherShare = ((parseFloat(e.amount)||0) * (100-myPct) / 100).toFixed(2);
+  return `<div class="expense-row">
+    <div class="exp-icon">${iconHtml}</div>
+    <div class="exp-info">
+      <div class="exp-name">${e.description||e.category||"Expense"}</div>
+      <div class="exp-meta">${kid?.name||"General"} · ${e.category||""} · ${ktFmtDate((e.date||"")+"T00:00:00")} · Paid by ${capitalize(e.paidBy||"—")}</div>
+    </div>
+    <div>
+      <div class="exp-amount">${fmtMoney(e.amount)}</div>
+      <div class="exp-split">You: ${fmtMoney(myShare)} / Other: ${fmtMoney(otherShare)}</div>
+    </div>
+    <div style="display:flex;gap:4px;margin-left:6px">
+      <button class="act-action-btn" style="width:26px;height:26px;border:1.5px solid var(--border);border-radius:7px;background:none;cursor:pointer;font-size:.72rem;color:var(--muted)" onclick="editExpense('${e.key}')">✏️</button>
+      <button class="act-action-btn del" style="width:26px;height:26px;border:1.5px solid var(--border);border-radius:7px;background:none;cursor:pointer;font-size:.72rem;color:var(--muted)" onclick="deleteExpense('${e.key}')">✕</button>
+    </div>
+  </div>`;
+}
+
+function renderReport() {
+  const el = document.getElementById("tab-report");
+  const entries = Object.values(expenses);
+  if (!entries.length) { el.innerHTML=`<div class="empty-state"><span class="emoji">📊</span><p>No data yet</p></div>`; return; }
+
+  // By category
+  const byCat = {};
+  entries.forEach(e => { const c=e.category||"Other"; byCat[c]=(byCat[c]||0)+(parseFloat(e.amount)||0); });
+  const maxCat = Math.max(...Object.values(byCat), 1);
+
+  // By kid
+  const byKid = {};
+  entries.forEach(e => { const k=e.kidId||"general"; byKid[k]=(byKid[k]||0)+(parseFloat(e.amount)||0); });
+  const totalAll = entries.reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+
+  el.innerHTML = `
+    <div class="kt-card" style="margin-bottom:10px">
+      <div class="kt-card-header">By Category</div>
+      <div class="kt-card-body">
+        ${Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
+          <div class="cat-bar-row">
+            <div class="cat-bar-label">${cat}</div>
+            <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round(amt/maxCat*100)}%"></div></div>
+            <div class="cat-bar-count">${fmtMoney(amt)}</div>
+          </div>`).join("")}
+      </div>
+    </div>
+    <div class="kt-card">
+      <div class="kt-card-header">By Child</div>
+      <div class="kt-card-body">
+        ${Object.entries(byKid).map(([kidId,amt])=>{
+          const kid=window.KT.settings.kids.find(k=>k.id===kidId);
+          const pct=Math.round(amt/totalAll*100);
+          return `<div class="cat-bar-row">
+            <div class="cat-bar-label">${kid?.icon||"💰"} ${kid?.name||"General"}</div>
+            <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:var(--purple)"></div></div>
+            <div class="cat-bar-count">${fmtMoney(amt)}</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+
+function renderBalance() {
+  const el = document.getElementById("tab-balance");
+  const entries = Object.values(expenses);
+  if (!entries.length) { el.innerHTML=`<div class="empty-state"><span class="emoji">⚖️</span><p>No expenses yet</p></div>`; return; }
+
+  const users = Object.values(window.KT.sharedUserRegistry).filter(u=>u.role!=="kid");
+  const balances = {};
+  users.forEach(u => { balances[u.name.toLowerCase()] = 0; });
+
+  entries.forEach(e => {
+    const amt = parseFloat(e.amount) || 0;
+    const paidBy = (e.paidBy||"").toLowerCase();
+    const splitPct = e.splitPct ?? 50; // pct that payer should pay
+    // Amount payer overpaid = amt - (amt * splitPct/100)
+    const overpaid = amt * (1 - splitPct/100);
+    if (paidBy && balances[paidBy] !== undefined) balances[paidBy] += overpaid;
+  });
+
+  const total = entries.reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+
+  el.innerHTML = `
+    <div class="balance-card">
+      <div class="balance-title">Total Expenses</div>
+      <div class="balance-main">${fmtMoney(total)}</div>
+    </div>
+    ${Object.entries(balances).map(([name, bal])=>{
+      const cls = bal > 5 ? "balance-positive" : bal < -5 ? "balance-negative" : "balance-zero";
+      const msg = bal > 5 ? `is owed ${fmtMoney(Math.abs(bal))}` : bal < -5 ? `owes ${fmtMoney(Math.abs(bal))}` : "is settled up";
+      return `<div class="balance-card">
+        <div class="balance-title">${capitalize(name)}</div>
+        <div class="balance-main ${cls}">${bal > 0 ? "+" : ""}${fmtMoney(bal)}</div>
+        <div class="balance-sub">${capitalize(name)} ${msg}</div>
+      </div>`;
+    }).join("")}
+    <div class="kt-card" style="margin-top:10px">
+      <div class="kt-card-header" style="justify-content:space-between">
+        Recent Expenses
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇️ Export CSV</button>
+      </div>
+    </div>`;
+}
+
+function openAddExpense() {
+  editingExpKey = null;
+  document.getElementById("exp-modal-title").textContent = "Add Expense";
+  document.getElementById("exp-date").value = ktTodayKey();
+  document.getElementById("exp-desc").value = "";
+  document.getElementById("exp-amount").value = "";
+  document.getElementById("exp-notes").value = "";
+  document.getElementById("exp-split").value = window.KT.settings.defaultSplit || 50;
+  document.getElementById("split-label").textContent = (window.KT.settings.defaultSplit||50) + "%";
+  populateExpSelects();
+  document.getElementById("exp-modal").classList.add("visible");
+}
+
+function editExpense(key) {
+  const e = expenses[key]; if (!e) return;
+  editingExpKey = key;
+  document.getElementById("exp-modal-title").textContent = "Edit Expense";
+  populateExpSelects(e.kidId, e.paidBy);
+  document.getElementById("exp-kid").value = e.kidId || "general";
+  document.getElementById("exp-cat").value = e.category || "";
+  document.getElementById("exp-desc").value = e.description || "";
+  document.getElementById("exp-amount").value = e.amount || "";
+  document.getElementById("exp-date").value = e.date || "";
+  document.getElementById("exp-split").value = e.splitPct ?? 50;
+  document.getElementById("split-label").textContent = (e.splitPct??50)+"%";
+  document.getElementById("exp-notes").value = e.notes || "";
+  document.getElementById("exp-modal").classList.add("visible");
+}
+
+function populateExpSelects(selectedKidId, selectedPaidBy) {
+  const kids = window.KT.settings.kids;
+  document.getElementById("exp-kid").innerHTML =
+    `<option value="general">General / All Kids</option>` +
+    kids.map(k=>`<option value="${k.id}" ${k.id===selectedKidId?"selected":""}>${k.icon} ${k.name}</option>`).join("");
+  const cats = window.KT.settings.moneyCategories || [];
+  document.getElementById("exp-cat").innerHTML = cats.map(c=>`<option value="${c}">${c}</option>`).join("");
+  const users = Object.values(window.KT.sharedUserRegistry).filter(u=>u.role!=="kid");
+  document.getElementById("exp-paidby").innerHTML = users.map(u=>`<option value="${u.name.toLowerCase()}" ${u.name.toLowerCase()===selectedPaidBy?"selected":""}>${u.name}</option>`).join("");
+}
+
+function saveExpense() {
+  const amount = parseFloat(document.getElementById("exp-amount").value);
+  if (!amount) { ktToast("Please enter an amount","danger"); return; }
+  const entry = {
+    kidId: document.getElementById("exp-kid").value,
+    category: document.getElementById("exp-cat").value,
+    description: document.getElementById("exp-desc").value,
+    amount: amount,
+    date: document.getElementById("exp-date").value,
+    paidBy: document.getElementById("exp-paidby").value,
+    splitPct: parseInt(document.getElementById("exp-split").value),
+    notes: document.getElementById("exp-notes").value,
+    createdBy: window.KT.userName,
+    createdAt: Date.now(),
+  };
+  const key = editingExpKey || `exp_${Date.now()}`;
+  ktSet(`kidtracker/money/${key}`, entry);
+  ktLogFeed(editingExpKey?"edited expense":"added expense", `${entry.description||entry.category} — ${fmtMoney(entry.amount)}`);
+  closeModal("exp-modal");
+  ktToast(editingExpKey?"Expense updated ✅":"Expense added ✅","success");
+}
+
+function deleteExpense(key) {
+  if (!confirm("Delete this expense?")) return;
+  const e = expenses[key];
+  ktSet(`kidtracker/money/${key}`, null);
+  ktLogFeed("deleted expense", `${e?.description||e?.category||"Expense"} ${fmtMoney(e?.amount)}`);
+}
+
+function exportCSV() {
+  const rows = [["Date","Child","Category","Description","Amount","Paid By","Your %","Notes"]];
+  Object.values(expenses).forEach(e => {
+    const kid = window.KT.settings.kids.find(k=>k.id===e.kidId);
+    rows.push([e.date||"",kid?.name||"General",e.category||"",e.description||"",e.amount||0,e.paidBy||"",e.splitPct??50,e.notes||""]);
+  });
+  const csv = rows.map(r=>r.join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = "data:text/csv," + encodeURIComponent(csv);
+  a.download = "kidtracker-money.csv"; a.click();
+}
+
+function fmtMoney(v) { return "₪" + (parseFloat(v)||0).toFixed(2); }
+function closeModal(id) { document.getElementById(id)?.classList.remove("visible"); }
+function handleModalBg(e,id) { if(e.target===document.getElementById(id))closeModal(id); }
+
+document.getElementById("login-screen").innerHTML = KT_LOGIN_HTML;
+</script>
+</body>
+</html>

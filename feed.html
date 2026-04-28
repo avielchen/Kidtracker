@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>KidTracker — Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<script type="module" src="firebase-loader.js"></script>
+<script src="shared.js"></script>
+</head>
+<body>
+
+<div id="login-screen" style="display:none"></div>
+<div class="top-nav"><div class="top-nav-inner" id="top-nav-inner"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">
+    🔔 Feed
+    <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✓ Mark all read</button>
+  </div>
+  <div id="feed-list"></div>
+</div>
+
+<script>
+let feedData = {};
+
+document.addEventListener("auth-change", e => {
+  if (!e.detail) { document.getElementById("login-screen").style.display="flex"; return; }
+  document.getElementById("login-screen").style.display="none";
+  ktInit("feed", () => loadFeed());
+});
+
+function loadFeed() {
+  ktOn("kidtracker/feed", data => {
+    feedData = data || {};
+    renderFeed();
+    // Mark entries from others as delivered (browser notification)
+    Object.entries(feedData).forEach(([k,e]) => {
+      if (!e.read && e.byUid !== window.KT.currentUser?.uid) {
+        ktNotify(`KidTracker — ${e.by}`, `${e.action}: ${e.details}`);
+      }
+    });
+  });
+}
+
+function renderFeed() {
+  const el = document.getElementById("feed-list");
+  const myUid = window.KT.currentUser?.uid;
+  const entries = Object.entries(feedData)
+    .map(([k,v]) => ({key:k,...v}))
+    .sort((a,b) => (b.ts||0) - (a.ts||0));
+
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty-state"><span class="emoji">🔔</span><p>No activity yet. Changes by you or the other parent will appear here.</p></div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="kt-card"><div class="kt-card-body" style="padding:4px 8px">` +
+    entries.map(e => {
+      const isUnread = !e.read && e.byUid !== myUid;
+      const timeAgo = fmtAgo(e.ts);
+      return `<div class="feed-item" onclick="markRead('${e.key}')">
+        <div class="feed-dot${isUnread?" unread":""}"></div>
+        <div class="feed-content">
+          <div class="feed-text">${e.by ? `<strong>${e.by}</strong> ` : ""}${e.action}</div>
+          ${e.details ? `<div style="font-size:.72rem;color:var(--text);margin-top:1px">${e.details}</div>` : ""}
+          <div class="feed-meta">${timeAgo}</div>
+        </div>
+        ${isUnread ? `<div style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px"></div>` : ""}
+      </div>`;
+    }).join("") + `</div></div>`;
+}
+
+function markRead(key) {
+  if (feedData[key] && !feedData[key].read) {
+    ktSet(`kidtracker/feed/${key}/read`, true);
+  }
+}
+
+function markAllRead() {
+  const myUid = window.KT.currentUser?.uid;
+  Object.entries(feedData).forEach(([k,e]) => {
+    if (!e.read && e.byUid !== myUid) ktSet(`kidtracker/feed/${k}/read`, true);
+  });
+}
+
+function fmtAgo(ts) {
+  if (!ts) return "";
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+document.getElementById("login-screen").innerHTML = KT_LOGIN_HTML;
+</script>
+</body>
+</html>

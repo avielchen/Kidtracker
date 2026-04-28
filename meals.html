@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>KidTracker — Meals</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<script type="module" src="firebase-loader.js"></script>
+<script src="shared.js"></script>
+<style>
+.meal-day-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden; }
+.meal-day-header { padding:9px 13px; background:#f8fafc; border-bottom:1.5px solid var(--border); font-weight:900; font-size:.88rem; display:flex; align-items:center; justify-content:space-between; }
+.meal-grid { display:grid; grid-template-columns:100px 1fr; }
+.meal-label-col { border-right:1px solid var(--border); }
+.meal-label { padding:10px 12px; border-bottom:1px solid var(--border); font-size:.72rem; font-weight:800; color:var(--muted); display:flex; align-items:center; gap:5px; }
+.meal-label:last-child { border-bottom:none; }
+.meal-data-col { }
+.meal-row { padding:8px 12px; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:5px; align-items:center; min-height:42px; }
+.meal-row:last-child { border-bottom:none; }
+.meal-chip { display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:20px; font-size:.68rem; font-weight:700; cursor:pointer; border:1.5px solid transparent; background:#f1f5f9; color:var(--muted); transition:all .12s; user-select:none; }
+.meal-chip:hover { filter:brightness(.93); }
+.meal-chip.active-mom { background:var(--pink-bg); color:var(--pink); border-color:var(--pink); }
+.meal-chip.active-dad { background:var(--blue-bg); color:var(--blue); border-color:var(--blue); }
+.meal-chip.active-together { background:var(--green-bg); color:var(--green); border-color:var(--green); }
+.meal-chip.active-other { background:var(--amber-bg); color:var(--amber); border-color:var(--amber); }
+.meal-note { font-size:.65rem; color:var(--muted); font-style:italic; margin-left:4px; }
+.req-pref { font-size:.62rem; background:var(--amber-bg); color:var(--amber); padding:2px 7px; border-radius:20px; font-weight:700; }
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="display:none"></div>
+<div class="top-nav"><div class="top-nav-inner" id="top-nav-inner"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">
+    🍽️ Meals
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm" onclick="changeDay(-1)">‹</button>
+      <span id="day-label" style="font-size:.82rem;font-weight:800;color:#374151;min-width:140px;text-align:center;align-self:center"></span>
+      <button class="btn btn-ghost btn-sm" onclick="changeDay(1)">›</button>
+    </div>
+  </div>
+
+  <div id="meals-content"></div>
+</div>
+
+<script>
+let mealOffset = 0;
+let mealData = {};
+
+const MEAL_LOCATIONS = [
+  { key:"mom",     label:"At Mom's",  cls:"active-mom" },
+  { key:"dad",     label:"At Dad's",  cls:"active-dad" },
+  { key:"together",label:"Together",  cls:"active-together" },
+  { key:"other",   label:"Other",     cls:"active-other" },
+];
+
+document.addEventListener("auth-change", e => {
+  if (!e.detail) { document.getElementById("login-screen").style.display="flex"; return; }
+  document.getElementById("login-screen").style.display="none";
+  ktInit("meals", () => {
+    updateDayLabel();
+    loadMeals();
+  });
+});
+
+function loadMeals() {
+  ktOn("kidtracker/meals", data => {
+    mealData = data || {};
+    renderMeals();
+  });
+}
+
+function updateDayLabel() {
+  const d = new Date(); d.setDate(d.getDate() + mealOffset);
+  const l = mealOffset === 0 ? "Today — " : mealOffset === -1 ? "Yesterday — " : mealOffset === 1 ? "Tomorrow — " : "";
+  document.getElementById("day-label").textContent = l + d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+
+function changeDay(delta) { mealOffset += delta; updateDayLabel(); renderMeals(); }
+
+function renderMeals() {
+  const dateKey = ktDateKey(mealOffset);
+  const dayData = mealData[dateKey] || {};
+  const meals = window.KT.settings.meals || ["Breakfast","Lunch","Dinner"];
+  const kids = window.KT.settings.kids.filter(k => !k.hidden);
+  const isParent = window.KT.userRole === "parent";
+  const content = document.getElementById("meals-content");
+
+  content.innerHTML = kids.map(kid => {
+    const kidData = dayData[kid.id] || {};
+    const avHtml = kid.iconImg ? `<img src="${kid.iconImg}" style="width:24px;height:24px;border-radius:50%;object-fit:cover"/>` : kid.icon;
+    const rows = meals.map(meal => {
+      const mealKey = meal.toLowerCase().replace(/\s/g,"_");
+      const val = kidData[mealKey] || {};
+      const activeKey = val.location || "";
+      const pref = val.kidPreference || "";
+
+      const chips = MEAL_LOCATIONS.map(loc =>
+        `<div class="meal-chip${activeKey===loc.key?" "+loc.cls:""}" data-kid="${kid.id}" data-meal="${mealKey}" data-loc="${loc.key}" onclick="setMeal(this)">${loc.label}</div>`
+      ).join("");
+
+      const noteHtml = val.note ? `<span class="meal-note">${val.note}</span>` : "";
+      const prefHtml = pref && isParent ? `<span class="req-pref">⭐ Kid wants: ${pref}</span>` : "";
+
+      return `<div class="meal-label">${meal}</div>` +
+             `<div class="meal-row">${chips}${noteHtml}${prefHtml}</div>`;
+    }).join("");
+
+    return `<div class="meal-day-card">
+      <div class="meal-day-header">
+        <span>${avHtml} ${kid.name}</span>
+        ${!isParent ? `<button class="btn btn-secondary btn-sm" onclick="openKidPref('${kid.id}','${dateKey}')">💬 My Preferences</button>` : ""}
+      </div>
+      <div class="meal-grid">${rows}</div>
+    </div>`;
+  }).join("");
+}
+
+function setMeal(el) {
+  if (window.KT.userRole !== "parent") return;
+  const { kid, meal, loc } = el.dataset;
+  const dateKey = ktDateKey(mealOffset);
+  const path = `kidtracker/meals/${dateKey}/${kid}/${meal}`;
+  const current = (mealData[dateKey]?.[kid]?.[meal]?.location) || "";
+  const newLoc = current === loc ? "" : loc;
+  ktSet(path + "/location", newLoc || null);
+  ktLogFeed("set meal", `${capitalize(meal)} for ${window.KT.settings.kids.find(k=>k.id===kid)?.name||kid}: ${newLoc||"cleared"}`);
+}
+
+function openKidPref(kidId, dateKey) {
+  const meals = window.KT.settings.meals || [];
+  const pref = prompt(`What are your meal preferences for today?\n(e.g. "Lunch: pizza, Dinner: pasta")`);
+  if (pref === null) return;
+  const kid = window.KT.settings.kids.find(k => k.id === kidId);
+  // Store preference under first meal as a general note
+  ktSet(`kidtracker/meals/${dateKey}/${kidId}/general_preference`, pref);
+  ktLogFeed("meal preference", `${kid?.name||kidId} wants: ${pref}`);
+  ktToast("Preference saved! Parents will see it.", "success");
+}
+
+document.getElementById("login-screen").innerHTML = KT_LOGIN_HTML;
+</script>
+</body>
+</html>

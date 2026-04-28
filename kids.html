@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>KidTracker — My Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<script type="module" src="firebase-loader.js"></script>
+<script src="shared.js"></script>
+<style>
+.kid-hero { background:linear-gradient(135deg,var(--blue-bg),#dbeafe); border-radius:var(--radius); padding:20px; text-align:center; margin-bottom:14px; }
+.kid-hero-avatar { font-size:3rem; margin-bottom:8px; }
+.kid-hero-name { font-size:1.4rem; font-weight:900; }
+.kid-hero-date { font-size:.82rem; color:var(--muted); font-weight:700; margin-top:3px; }
+.info-row { display:flex; align-items:center; gap:10px; padding:10px 13px; border-bottom:1px solid var(--border); }
+.info-row:last-child { border-bottom:none; }
+.info-icon { font-size:1.2rem; flex-shrink:0; }
+.info-label { font-size:.7rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+.info-value { font-size:.88rem; font-weight:800; margin-top:1px; }
+.help-btn { background:var(--red); color:#fff; border:none; border-radius:14px; padding:14px; font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem; cursor:pointer; width:100%; margin-top:12px; box-shadow:0 4px 16px rgba(220,38,38,.3); transition:all .15s; }
+.help-btn:hover { background:#b91c1c; transform:translateY(-1px); }
+.kid-select { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.kid-select-btn { padding:8px 16px; border-radius:20px; border:2px solid var(--border); background:var(--card); font-family:'Nunito',sans-serif; font-weight:700; font-size:.82rem; cursor:pointer; transition:all .15s; }
+.kid-select-btn.active { background:var(--blue-bg); color:var(--blue); border-color:var(--blue); }
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="display:none"></div>
+<div class="top-nav"><div class="top-nav-inner" id="top-nav-inner"></div></div>
+
+<div class="page-wrap">
+  <!-- Kid selector (shown if multiple kids match this user or parent is viewing) -->
+  <div class="kid-select" id="kid-select"></div>
+
+  <div id="kid-view"></div>
+</div>
+
+<!-- Request Activity Modal -->
+<div class="modal-overlay" id="req-modal" onclick="handleModalBg(event,'req-modal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <button class="modal-close" onclick="closeModal('req-modal')">✕</button>
+  <div class="modal-title">⭐ Request Activity</div>
+  <div class="form-row">
+    <div class="form-label">What activity?</div>
+    <select class="kt-input" id="req-type"></select>
+  </div>
+  <div class="form-row">
+    <div class="form-label">When? (approximate)</div>
+    <input type="date" class="kt-input" id="req-date"/>
+  </div>
+  <div class="form-row">
+    <div class="form-label">Details / why you want to go</div>
+    <textarea class="kt-input" id="req-details" placeholder="Tell your parents more…" rows="3"></textarea>
+  </div>
+  <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="submitRequest()">Send Request to Parents</button>
+</div>
+</div>
+
+<!-- Meal preference modal -->
+<div class="modal-overlay" id="meal-modal" onclick="handleModalBg(event,'meal-modal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <button class="modal-close" onclick="closeModal('meal-modal')">✕</button>
+  <div class="modal-title">🍽️ Meal Preferences</div>
+  <div id="meal-pref-content"></div>
+  <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="saveMealPrefs()">Send to Parents</button>
+</div>
+</div>
+
+<script>
+let selectedKidId = null;
+let todayDayData = {};
+let todayActivities = {};
+let todayMeals = {};
+
+document.addEventListener("auth-change", e => {
+  if (!e.detail) { document.getElementById("login-screen").style.display="flex"; return; }
+  document.getElementById("login-screen").style.display="none";
+  ktInit("kids", () => {
+    buildKidSelector();
+    loadData();
+  });
+});
+
+function buildKidSelector() {
+  const kids = window.KT.settings.kids.filter(k => !k.hidden);
+  const sel = document.getElementById("kid-select");
+  if (kids.length <= 1) { selectedKidId = kids[0]?.id; sel.style.display="none"; renderKidView(); return; }
+  sel.innerHTML = kids.map(k => `<button class="kid-select-btn${selectedKidId===k.id?" active":""}" onclick="selectKid('${k.id}')">${k.icon} ${k.name}</button>`).join("");
+  if (!selectedKidId) selectKid(kids[0].id);
+}
+
+function selectKid(kidId) {
+  selectedKidId = kidId;
+  document.querySelectorAll(".kid-select-btn").forEach(b => b.classList.toggle("active", b.textContent.includes(window.KT.settings.kids.find(k=>k.id===kidId)?.name||"")));
+  renderKidView();
+}
+
+function loadData() {
+  const todayKey = ktTodayKey();
+  ktOn(`kidtracker/days/${todayKey}`, data => { todayDayData = data || {}; renderKidView(); });
+  ktOn("kidtracker/activities", data => { todayActivities = data || {}; renderKidView(); });
+  ktOn(`kidtracker/meals/${todayKey}`, data => { todayMeals = data || {}; renderKidView(); });
+}
+
+function renderKidView() {
+  if (!selectedKidId) return;
+  const kid = window.KT.settings.kids.find(k => k.id === selectedKidId);
+  if (!kid) return;
+  const el = document.getElementById("kid-view");
+  const todayKey = ktTodayKey();
+  const s = todayDayData.kids?.[selectedKidId] || {};
+  const today = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+
+  // Today's activities for this kid
+  const myActs = Object.values(todayActivities).filter(a => a.kidId === selectedKidId && a.date === todayKey);
+
+  // Today's meals
+  const mealData = todayMeals[selectedKidId] || {};
+  const meals = window.KT.settings.meals || [];
+
+  // School time
+  const dt = s.dayType;
+  const endTime = s.endTimeOverride || (dt==="halfday"?kid.halfdayTime:kid.endTime) || "—";
+  const pickupTime = s.pickupTime || kid.pickupTime || "—";
+  const pickupBy = s.pickup ? capitalize(s.pickup) : "—";
+
+  const avHtml = kid.iconImg ? `<img src="${kid.iconImg}" style="width:3rem;height:3rem;border-radius:50%;object-fit:cover"/>` : `<div style="font-size:3rem">${kid.icon}</div>`;
+
+  el.innerHTML = `
+    <div class="kid-hero">
+      <div class="kid-hero-avatar">${avHtml}</div>
+      <div class="kid-hero-name">Hi, ${kid.name}! 👋</div>
+      <div class="kid-hero-date">${today}</div>
+    </div>
+
+    <!-- Today's school info -->
+    <div class="kt-card" style="margin-bottom:10px">
+      <div class="kt-card-header">📚 School Today</div>
+      <div class="info-row"><div class="info-icon">🕐</div><div><div class="info-label">School Ends</div><div class="info-value">${dt==="noschool"?"No School Today 🎉":(dt==="halfday"?"Half Day — ":"")+ktFmtTime(endTime)}</div></div></div>
+      <div class="info-row"><div class="info-icon">🚗</div><div><div class="info-label">Pickup</div><div class="info-value">${pickupBy} ${pickupTime!=="—"?"at "+ktFmtTime(pickupTime):""}</div></div></div>
+    </div>
+
+    <!-- Today's activities -->
+    <div class="kt-card" style="margin-bottom:10px">
+      <div class="kt-card-header" style="justify-content:space-between">
+        🎯 Today's Activities
+        <button class="btn btn-secondary btn-sm" onclick="openRequestActivity()">⭐ Request</button>
+      </div>
+      ${myActs.length ? myActs.map(a=>`
+        <div class="info-row">
+          <div class="info-icon">🎯</div>
+          <div>
+            <div class="info-label">${a.type}</div>
+            <div class="info-value">${ktFmtTime(a.startTime)} ${a.endTime?"— "+ktFmtTime(a.endTime):""}</div>
+            ${a.dropoff?`<div style="font-size:.68rem;color:var(--muted)">Drop-off: ${capitalize(a.dropoff)}</div>`:""}
+            ${a.pickup?`<div style="font-size:.68rem;color:var(--muted)">Pick-up: ${capitalize(a.pickup)}</div>`:""}
+            ${a.notes?`<div style="font-size:.68rem;color:var(--muted)">📍 ${a.notes}</div>`:""}
+          </div>
+        </div>`).join("") : `<div style="padding:12px 13px;font-size:.8rem;color:var(--muted);font-weight:600">No activities today</div>`}
+    </div>
+
+    <!-- Meals -->
+    <div class="kt-card" style="margin-bottom:10px">
+      <div class="kt-card-header" style="justify-content:space-between">
+        🍽️ Meals
+        <button class="btn btn-secondary btn-sm" onclick="openMealPrefs()">💬 My Preferences</button>
+      </div>
+      ${meals.map(m => {
+        const key = m.toLowerCase().replace(/\s/g,"_");
+        const loc = mealData[key]?.location || "—";
+        const locLabel = {mom:"At Mom's 👩",dad:"At Dad's 👨",together:"Together 👨‍👩‍👧",other:"Other"}[loc] || "Not set";
+        return `<div class="info-row"><div class="info-icon">🍴</div><div><div class="info-label">${m}</div><div class="info-value">${locLabel}</div></div></div>`;
+      }).join("")}
+    </div>
+
+    <!-- Help button -->
+    <button class="help-btn" onclick="sendHelp()">🆘 I Need Help!</button>`;
+}
+
+function openRequestActivity() {
+  const cats = window.KT.settings.activityCategories || [];
+  document.getElementById("req-type").innerHTML = cats.map(c=>`<option value="${c}">${c}</option>`).join("");
+  document.getElementById("req-date").value = ktTodayKey();
+  document.getElementById("req-details").value = "";
+  document.getElementById("req-modal").classList.add("visible");
+}
+
+function submitRequest() {
+  const type = document.getElementById("req-type").value;
+  const date = document.getElementById("req-date").value;
+  const details = document.getElementById("req-details").value;
+  const kid = window.KT.settings.kids.find(k => k.id === selectedKidId);
+  const entry = {
+    kidId: selectedKidId, type, date,
+    notes: details, isRequest: true,
+    createdBy: kid?.name || "Kid",
+    createdAt: Date.now(),
+  };
+  ktSet(`kidtracker/activities/req_${Date.now()}`, entry);
+  ktLogFeed("activity request", `${kid?.name||"Kid"} wants to do ${type} on ${ktFmtDate(date+"T00:00:00")}`);
+  closeModal("req-modal");
+  ktToast("Request sent to parents! ⭐", "success");
+}
+
+function openMealPrefs() {
+  const meals = window.KT.settings.meals || [];
+  document.getElementById("meal-pref-content").innerHTML = meals.map(m => `
+    <div class="form-row">
+      <div class="form-label">${m}</div>
+      <input type="text" class="kt-input" id="mpref-${m.toLowerCase().replace(/\s/g,"_")}" placeholder="What do you want for ${m.toLowerCase()}?"/>
+    </div>`).join("");
+  document.getElementById("meal-modal").classList.add("visible");
+}
+
+function saveMealPrefs() {
+  const meals = window.KT.settings.meals || [];
+  const todayKey = ktTodayKey();
+  const kid = window.KT.settings.kids.find(k => k.id === selectedKidId);
+  let prefs = [];
+  meals.forEach(m => {
+    const key = m.toLowerCase().replace(/\s/g,"_");
+    const val = document.getElementById(`mpref-${key}`)?.value?.trim();
+    if (val) {
+      ktSet(`kidtracker/meals/${todayKey}/${selectedKidId}/${key}/kidPreference`, val);
+      prefs.push(`${m}: ${val}`);
+    }
+  });
+  if (prefs.length) ktLogFeed("meal preferences", `${kid?.name||"Kid"} wants: ${prefs.join(", ")}`);
+  closeModal("meal-modal");
+  ktToast("Preferences sent to parents! 🍽️", "success");
+}
+
+function sendHelp() {
+  const kid = window.KT.settings.kids.find(k => k.id === selectedKidId);
+  ktLogFeed("HELP NEEDED", `${kid?.name||"Kid"} pressed the Help button!`);
+  ktNotify(`🆘 ${kid?.name||"Kid"} needs help!`, "They pressed the Help button in KidTracker", { persist: true, vibrate: [300,100,300,100,300] });
+  ktToast("Help alert sent to parents! 🆘", "danger", 4000);
+}
+
+function closeModal(id) { document.getElementById(id)?.classList.remove("visible"); }
+function handleModalBg(e,id) { if(e.target===document.getElementById(id))closeModal(id); }
+
+document.getElementById("login-screen").innerHTML = KT_LOGIN_HTML;
+</script>
+</body>
+</html>
